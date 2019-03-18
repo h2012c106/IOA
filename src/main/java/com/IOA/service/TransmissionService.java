@@ -22,44 +22,56 @@ import java.util.stream.Collectors;
 @Service
 public class TransmissionService {
 
-    private final ResultDAO RDAO;
+    @Autowired
+    GreenhouseClusterDAO GCDAO;
 
-    private final DeviceDAO DDAO;
+    @Autowired
+    ClusterDAO CDAO;
 
-    private final SensorDAO SDAO;
+    @Autowired
+    ClusterDeviceDAO CDDAO;
 
-    private final ThresholdDAO TDAO;
+    @Autowired
+    ClusterSensorDAO CSDAO;
 
-    private final SensorGreenhouseDAO SGDAO;
+    @Autowired
+    DeviceDAO DDAO;
 
-    private final MyPipe Pipe;
+    @Autowired
+    SensorDAO SDAO;
+
+    @Autowired
+    SelectDAO SeDAO;
+
+    @Autowired
+    SensorResultDAO SRDAO;
+
+    @Autowired
+    GreenhouseResultDAO GRDAO;
+
+    @Autowired
+    ThresholdDAO TDAO;
+
+    @Autowired
+    ResultDAO RDAO;
+
+    @Autowired
+    MyPipe Pipe;
 
     private ListnerService listnerService;
 
-    @Autowired
-    public TransmissionService(ResultDAO RDAO,
-                               DeviceDAO DDAO,
-                               SensorDAO SDAO,
-                               ThresholdDAO TDAO,
-                               SensorGreenhouseDAO SGDAO,
-                               MyPipe Pipe) throws IOException {
-        this.RDAO = RDAO;
-        this.DDAO = DDAO;
-        this.SDAO = SDAO;
-        this.TDAO = TDAO;
-        this.SGDAO = SGDAO;
-        this.Pipe = Pipe;
+    public TransmissionService() throws IOException {
         this.listnerService = new ListnerService();
         new Thread(listnerService).start();
     }
 
     public NormalMessage sendOrder(Integer deviceId, String status) {
-        List<DeviceModel> deviceArr = DDAO.searchBySomeId(deviceId, "id");
-        if (deviceArr.size() == 0) {
+        List<ClusterDeviceModel> deviceOfClusterArr = CDDAO.searchBySomeId(deviceId, "id");
+        if (deviceOfClusterArr.size() == 0) {
             return new NormalMessage(false, MyErrorType.DeviceUnexist, null);
         }
-        String clusterId = deviceArr.get(0).getClusterId();
-        String nickname = deviceArr.get(0).getNickname();
+        String clusterId = deviceOfClusterArr.get(0).getClusterId();
+        String nickname = deviceOfClusterArr.get(0).getNickname();
         String order = SensorConfig.TranslateOrder(nickname, status);
         if (order == null) {
             return new NormalMessage(false, MyErrorType.OrderFail, null);
@@ -149,16 +161,29 @@ public class TransmissionService {
                     this.idSet.add(clusterId);
 
                     // 拿到传感器群所属大棚，如果传感器不属于任何大棚，或传感器处于close或error状态则不记录数据
-                    List<SensorGreenhouseModel> sensorGreenhouseModelList
-                            = SGDAO.searchBySomeId(clusterId, "clusterId");
-                    if (sensorGreenhouseModelList.size() != 0
-                            && sensorGreenhouseModelList.get(0).getStatus().equals("on")) {
+                    List<GreenhouseClusterModel> singleGC
+                            = GCDAO.searchBySomeId(clusterId, "clusterId");
+                    List<ClusterModel> singleCluster = CDAO.searchBySomeId(clusterId, "id");
+                    if (singleGC.size() != 0
+                            && singleCluster.size() != 0
+                            && singleCluster.get(0).getStatus().equals("on")) {
 
                         // 拿到这个传感器群中的所有传感器+设备
-                        List<SensorModel> sensorArrOfCluster
-                                = SDAO.searchBySomeId(clusterId, "clusterId");
-                        List<DeviceModel> deviceArrOfCluster
-                                = DDAO.searchBySomeId(clusterId, "clusterId");
+                        List<ClusterSensorModel> sensorOfClusterArr
+                                = CSDAO.searchBySomeId(clusterId, "clusterId");
+//                        List<Object> sensorIdOfCluster = sensorOfClusterArr.stream()
+//                                .map(ClusterSensorModel::getSensorId)
+//                                .collect(Collectors.toList());
+//                        List<SensorModel> sensorArr
+//                                = SDAO.searchBySomeId(sensorIdOfCluster, "id");
+
+                        List<ClusterDeviceModel> deviceOfClusterArr
+                                = CDDAO.searchBySomeId(clusterId, "clusterId");
+//                        List<Object> deviceIdOfCluster = deviceOfClusterArr.stream()
+//                                .map(ClusterDeviceModel::getDeviceId)
+//                                .collect(Collectors.toList());
+//                        List<DeviceModel> deviceArrOfCluster
+//                                = DDAO.searchBySomeId(deviceIdOfCluster, "id");
 
                         // 把收到的信息转化成对应的数据结构
                         List<BigDecimal> rawSensorArr = this.parseSensor(msg);
@@ -166,14 +191,15 @@ public class TransmissionService {
 
                         // 根据位置或标号以及集群id，建立<传感器id-数据值>对
                         Map<Integer, Map<String, BigDecimal>> sensorMap
-                                = this.convertSensorId(sensorArrOfCluster, rawSensorArr);
+                                = this.convertSensorId(sensorOfClusterArr, rawSensorArr);
                         Map<Integer, String> deviceMap
-                                = this.convertDeviceId(deviceArrOfCluster, rawDeviceMap);
+                                = this.convertDeviceId(deviceOfClusterArr, rawDeviceMap);
 
                         // 塞入缓存及数据库
-                        this.fulfillPipe(clusterId, sensorMap, deviceMap, currentTime);
-                        this.fulfillDB(sensorGreenhouseModelList.get(0).getGreenhouseId(),
-                                sensorMap, deviceMap, sensorArrOfCluster, currentTime);
+//                        this.fulfillPipe(clusterId, sensorMap, deviceMap, currentTime);
+                        this.fulfillPipe(clusterId, sensorMap, currentTime);
+                        this.fulfillDB(singleGC.get(0).getGreenhouseId(),
+                                sensorMap, deviceMap, sensorOfClusterArr, currentTime);
                     }
 
                     //////////// 收到传感器群信息后的逻辑 ////////////
@@ -218,14 +244,18 @@ public class TransmissionService {
             return res;
         }
 
-        private Map<Integer, Map<String, BigDecimal>> convertSensorId(List<SensorModel> sensorArrOfCluster,
+        private Map<Integer, Map<String, BigDecimal>> convertSensorId(List<ClusterSensorModel> sensorArrOfCluster,
                                                                       List<BigDecimal> sensorArr) {
             Map<Integer, Map<String, BigDecimal>> res = new HashMap<>();
-            for (SensorModel tmpSensor : sensorArrOfCluster) {
-                int thresholdId = tmpSensor.getThresholdId();
+            for (ClusterSensorModel tmpSensor : sensorArrOfCluster) {
+                Integer sensorId = tmpSensor.getSensorId();
+                List<SelectModel> thresholdSelectedBySensorArr
+                        = SeDAO.searchBySomeId(sensorId, "sensorId");
                 BigDecimal minimum = null;
                 BigDecimal maximum = null;
-                if (thresholdId != -1) {
+                if (thresholdSelectedBySensorArr.size() == 1) {
+                    Integer thresholdId
+                            = thresholdSelectedBySensorArr.get(0).getThresholdId();
                     List<ThresholdModel> thresholdArr =
                             TDAO.searchBySomeId(thresholdId, "id");
                     if (thresholdArr.size() != 0) {
@@ -241,36 +271,37 @@ public class TransmissionService {
                 tmpMap.put("value", value);
                 tmpMap.put("minimum", minimum);
                 tmpMap.put("maximum", maximum);
-                res.put(tmpSensor.getId(), tmpMap);
+                res.put(sensorId, tmpMap);
             }
             return res;
         }
 
-        private Map<Integer, String> convertDeviceId(List<DeviceModel> deviceArrOfCluster,
+        private Map<Integer, String> convertDeviceId(List<ClusterDeviceModel> deviceArrOfCluster,
                                                      Map<String, String> deviceMap) {
             Map<Integer, String> res = new HashMap<>();
-            for (DeviceModel tmpDevice : deviceArrOfCluster) {
+            for (ClusterDeviceModel tmpDevice : deviceArrOfCluster) {
                 String key = tmpDevice.getNickname();
-                res.put(tmpDevice.getId(), deviceMap.get(key));
+                res.put(tmpDevice.getDeviceId(), deviceMap.get(key));
             }
             return res;
         }
 
-        private void fulfillPipe(String clusterId, Map<Integer, Map<String, BigDecimal>> sensorMap,
-                                 Map<Integer, String> deviceMap, Timestamp currentTime) {
+        private void fulfillPipe(String clusterId,
+                                 Map<Integer, Map<String, BigDecimal>> sensorMap,
+                                 Timestamp currentTime) {
             Pipe.setSensor2Server(clusterId, sensorMap);
-            Pipe.setDevice2Server(clusterId, deviceMap);
+//            Pipe.setDevice2Server(clusterId, deviceMap);
             Pipe.setRefreshTime(clusterId, currentTime);
         }
 
         private void fulfillDB(Integer greenhouseId,
                                Map<Integer, Map<String, BigDecimal>> sensorMap,
                                Map<Integer, String> deviceMap,
-                               List<SensorModel> sensorArrOfCluster,
+                               List<ClusterSensorModel> sensorArrOfCluster,
                                Timestamp currentTime) {
             // 存Result表
-            for (SensorModel tmpSensor : sensorArrOfCluster) {
-                int sensorId = tmpSensor.getId();
+            for (ClusterSensorModel tmpSensor : sensorArrOfCluster) {
+                int sensorId = tmpSensor.getSensorId();
                 BigDecimal value = sensorMap.get(sensorId) == null
                         ? null : sensorMap.get(sensorId).get("value");
                 BigDecimal minimum = sensorMap.get(sensorId) == null
@@ -278,8 +309,9 @@ public class TransmissionService {
                 BigDecimal maximum = sensorMap.get(sensorId) == null
                         ? null : sensorMap.get(sensorId).get("maximum");
 
-                RDAO.save(new ResultModel(sensorId, value, currentTime,
-                        minimum, maximum, greenhouseId));
+                Integer newResultId = RDAO.saveBackId(new ResultModel(value, currentTime, minimum, maximum));
+                GRDAO.save(new GreenhouseResultModel(greenhouseId, newResultId));
+                SRDAO.save(new SensorResultModel(sensorId, newResultId));
             }
 
             // 更新Device表

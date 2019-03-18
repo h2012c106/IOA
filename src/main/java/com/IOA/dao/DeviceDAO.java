@@ -9,39 +9,31 @@ import java.util.List;
 
 @Component
 public class DeviceDAO extends BasicDAO<DeviceModel> {
-    public void updateStatus(Integer id, String status) {
+
+    public void updateStatus(Integer deviceId, String newStatus) {
         Session tmpSession = this.getTmpSession();
         Transaction transaction = tmpSession.beginTransaction();
         String qry = "UPDATE DeviceModel " +
                 "SET status = (:status) " +
                 "WHERE id = (:id)";
-        tmpSession.createQuery(qry)
-                .setParameter("status", status)
-                .setParameter("id", id)
-                .executeUpdate();
-        transaction.commit();
+        try {
+            tmpSession.createQuery(qry)
+                    .setParameter("status", newStatus)
+                    .setParameter("id", deviceId)
+                    .executeUpdate();
+            transaction.commit();
+        } catch (Exception ignored) {
+        }
     }
 
-    public void closeAll(String clusterId){
+    public void closeAll(List<Object> deviceIdArr) {
         Session tmpSession = this.getTmpSession();
         Transaction transaction = tmpSession.beginTransaction();
         String qry = "UPDATE DeviceModel " +
                 "SET status = 'close' " +
-                "WHERE clusterId = (:clusterId) AND status = 'on'";
+                "WHERE id IN (:id) AND status = 'on'";
         tmpSession.createQuery(qry)
-                .setParameter("clusterId", clusterId)
-                .executeUpdate();
-        transaction.commit();
-    }
-
-    public void closeAll(List<String> clusterIdArr){
-        Session tmpSession = this.getTmpSession();
-        Transaction transaction = tmpSession.beginTransaction();
-        String qry = "UPDATE DeviceModel " +
-                "SET status = 'close' " +
-                "WHERE clusterId IN (:clusterIdArr) AND status = 'on'";
-        tmpSession.createQuery(qry)
-                .setParameterList("clusterIdArr", clusterIdArr)
+                .setParameterList("id", deviceIdArr)
                 .executeUpdate();
         transaction.commit();
     }

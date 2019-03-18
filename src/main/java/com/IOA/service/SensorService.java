@@ -1,13 +1,7 @@
 package com.IOA.service;
 
-import com.IOA.dao.ResultDAO;
-import com.IOA.dao.SensorDAO;
-import com.IOA.dao.SensorGreenhouseDAO;
-import com.IOA.dao.ThresholdDAO;
-import com.IOA.model.ResultModel;
-import com.IOA.model.SensorGreenhouseModel;
-import com.IOA.model.SensorModel;
-import com.IOA.model.ThresholdModel;
+import com.IOA.dao.*;
+import com.IOA.model.*;
 import com.IOA.util.MyErrorType;
 import com.IOA.util.MyPipe;
 import com.IOA.vo.NormalMessage;
@@ -19,12 +13,28 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class SensorService {
 
     @Autowired
+    GreenhouseClusterDAO GCDAO;
+
+    @Autowired
+    ClusterDAO CDAO;
+
+    @Autowired
+    ClusterSensorDAO CSDAO;
+
+    @Autowired
     SensorDAO SDAO;
+
+    @Autowired
+    SelectDAO SeDAO;
+
+    @Autowired
+    SensorThresholdDAO STDAO;
 
     @Autowired
     ThresholdDAO TDAO;
@@ -33,37 +43,23 @@ public class SensorService {
     ResultDAO RDAO;
 
     @Autowired
-    SensorGreenhouseDAO SGDAO;
-
-    @Autowired
     MyPipe Pipe;
 
-    public NormalMessage registerThreshold(String token, ThresholdModel threshold) {
-        Integer sensorId = threshold.getSensorId();
-        String name = threshold.getName();
+    public NormalMessage registerThreshold(String token, Integer sensorId, String name,
+                                           BigDecimal minimum, BigDecimal maximum) {
 
         // 看看该传感器下有没有同名阈值
-        List<ThresholdModel> sameNameThreshold
-                = TDAO.searchBySomeId(sensorId, "sensorId", name, "name");
-        if (sameNameThreshold.size() != 0) {
+        List<SensorThresholdModel> thresholdOfSensorArr
+                = STDAO.searchBySomeId(sensorId, "sensorId");
+        List<Object> thresholdIdOfSensorArr = thresholdOfSensorArr.stream()
+                .map(SensorThresholdModel::getThresholdId)
+                .collect(Collectors.toList());
+        if (TDAO.isNameDuplicate(thresholdIdOfSensorArr, name)) {
             return new NormalMessage(false, MyErrorType.ThresholdNameDuplicate, null);
         }
 
-        // 把传感器所属传感器群的大棚找出来
-        List<SensorModel> singleSensor = SDAO.searchBySomeId(sensorId, "sensorId");
-        if (singleSensor.size() == 0) {
-            return new NormalMessage(false, MyErrorType.SensorUnexist, null);
-        }
-
-        String clusterId = singleSensor.get(0).getClusterId();
-        List<SensorGreenhouseModel> singleCluster = SGDAO.searchBySomeId(clusterId, "clusterId");
-        if (singleCluster.size() == 0) {
-            return new NormalMessage(false, MyErrorType.ClusterUnexist, null);
-        }
-
-        int greenhouseId = singleCluster.get(0).getGreenhouseId();
-        threshold.setGreenhouseId(greenhouseId);
-        TDAO.save(threshold);
+        Integer newId = TDAO.saveBackId(new ThresholdModel(name, minimum, maximum));
+        STDAO.save(new SensorThresholdModel(sensorId, newId));
         return new NormalMessage(true, null, null);
     }
 
@@ -83,12 +79,11 @@ public class SensorService {
         }
 
         // 把传感器所属传感器群找出来
-        String clusterId = singleSensor.get(0).getClusterId();
-        List<SensorGreenhouseModel> singleCluster = SGDAO.searchBySomeId(clusterId, "clusterId");
-        if (singleCluster.size() == 0) {
-            return new NormalMessage(false, MyErrorType.ClusterUnexist, null);
+        List<ClusterSensorModel> singleCS = CSDAO.searchBySomeId(sensorId, "sensorId");
+        if (singleCS.size() == 0) {
+            return new NormalMessage(false, MyErrorType.SensorUnexist, null);
         }
-        Integer greenhouseId = singleCluster.get(0).getGreenhouseId();
+        String clusterId = singleCS.get(0).getClusterId();
 
         Timestamp timestamp = Pipe.getRefreshTime(clusterId);
         Map<Integer, Map<String, BigDecimal>> sensorCache
@@ -98,12 +93,20 @@ public class SensorService {
         BigDecimal maximum = null;
         if (sensorCache == null || timestamp == null) {
             timestamp = null;
-            List<ResultModel> singleResult = RDAO.searchLatestResult(sensorId, greenhouseId);
-            if (singleResult.size() != 0) {
-                timestamp = singleResult.get(0).getTime();
-                value = singleResult.get(0).getValue();
-                minimum = singleResult.get(0).getMinimum();
-                maximum = singleResult.get(0).getMaximum();
+
+            // 把传感器群所属的大棚找出来
+            List<GreenhouseClusterModel> singleGC = GCDAO.searchBySomeId(clusterId, "clusterId");
+            if (singleGC.size() == 0) {
+                return new NormalMessage(false, MyErrorType.ClusterUnexist, null);
+            }
+            Integer greenhouseId = singleGC.get(0).getGreenhouseId();
+
+            ResultModel singleResult = RDAO.searchLatestResult(sensorId, greenhouseId);
+            if (singleResult != null) {
+                timestamp = singleResult.getTime();
+                value = singleResult.getValue();
+                minimum = singleResult.getMinimum();
+                maximum = singleResult.getMaximum();
             }
         } else {
             value = sensorCache.get(sensorId) == null
@@ -128,40 +131,51 @@ public class SensorService {
             return new NormalMessage(false, MyErrorType.SensorUnexist, null);
         }
 
-        // 把传感器所属传感器群的大棚找出来，用于过滤传感器读数
-        String clusterId = singleSensor.get(0).getClusterId();
-        List<SensorGreenhouseModel> singleCluster = SGDAO.searchBySomeId(clusterId, "clusterId");
-        if (singleCluster.size() == 0) {
+        // 把传感器所属传感器群找出来
+        List<ClusterSensorModel> singleCS = CSDAO.searchBySomeId(sensorId, "sensorId");
+        if (singleCS.size() == 0) {
+            return new NormalMessage(false, MyErrorType.SensorUnexist, null);
+        }
+        String clusterId = singleCS.get(0).getClusterId();
+
+        // 把传感器群所属的大棚找出来
+        List<GreenhouseClusterModel> singleGC = GCDAO.searchBySomeId(clusterId, "clusterId");
+        if (singleGC.size() == 0) {
             return new NormalMessage(false, MyErrorType.ClusterUnexist, null);
         }
-        int greenhouseId = singleCluster.get(0).getGreenhouseId();
+        Integer greenhouseId = singleGC.get(0).getGreenhouseId();
 
         List<ResultModel> resultList
-                = RDAO.searchBySomeId(sensorId, "sensorId", greenhouseId, "greenhouseId");
+                = RDAO.searchHistoryResult(sensorId, greenhouseId);
 
         return new NormalMessage(true, null, resultList);
     }
 
     public NormalMessage getThresholdList(String token, Integer sensorId) {
-        List<ThresholdModel> thresholdArr = TDAO.searchBySomeId(sensorId, "sensorId");
+        List<SensorThresholdModel> thresholdOfSensorArr
+                = STDAO.searchBySomeId(sensorId, "sensorId");
+        List<Object> thresholdIdOfSensorArr = thresholdOfSensorArr.stream()
+                .map(SensorThresholdModel::getThresholdId)
+                .collect(Collectors.toList());
+        List<ThresholdModel> thresholdArr = TDAO.searchBySomeId(thresholdIdOfSensorArr, "id");
         return new NormalMessage(true, null, thresholdArr);
     }
 
     public NormalMessage selectThreshold(String token, Integer sensorId, Integer thresholdId) {
-        List<ThresholdModel> singleThreshold
-                = TDAO.searchBySomeId(sensorId, "sensorId", thresholdId, "id");
-        if (singleThreshold.size() == 0) {
+        List<SensorThresholdModel> thresholdOfSensorArr
+                = STDAO.searchBySomeId(sensorId, "sensorId", thresholdId, "thresholdId");
+        if (thresholdOfSensorArr.size() == 0) {
             return new NormalMessage(false, MyErrorType.ThresholdUnexist, null);
         }
 
-        return SDAO.updateThreshold(sensorId, thresholdId)
-                ? new NormalMessage(true, null, null)
-                : new NormalMessage(false, MyErrorType.UpdateError, null);
+        SeDAO.select(sensorId, thresholdId);
+        return new NormalMessage(true, null, null);
     }
 
     public NormalMessage unbindThreshold(String token, Integer sensorId, Integer thresholdId) {
-        TDAO.deleteBySomeId(sensorId, "sensorId", thresholdId, "id");
-        SDAO.updateThreshold(sensorId, -1);
+        SeDAO.deleteBySomeId(thresholdId, "thresholdId");
+        STDAO.deleteBySomeId(thresholdId, "thresholdId");
+        TDAO.deleteBySomeId(thresholdId, "id");
         return new NormalMessage(true, null, null);
     }
 }

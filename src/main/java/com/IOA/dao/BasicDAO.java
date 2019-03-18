@@ -1,5 +1,6 @@
 package com.IOA.dao;
 
+import com.IOA.model.ThresholdModel;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -191,4 +192,64 @@ public class BasicDAO<T> {
 //        }
 //        return res;
 //    }
+
+
+    public boolean isNameDuplicate(String name) {
+        List<T> res;
+        Session tmpSession = this.getTmpSession();
+        String qry = "FROM " + this.modelName +
+                " WHERE name = (:name)";
+        res = tmpSession.createQuery(qry)
+                .setParameter("name", name)
+                .list();
+        return res.size() > 0;
+    }
+
+
+    public boolean isNameDuplicate(String name, Object id) {
+        List<T> res;
+        Session tmpSession = this.getTmpSession();
+        String qry = "FROM " + this.modelName +
+                " WHERE id <> (:id) AND name = (:name)";
+        res = tmpSession.createQuery(qry)
+                .setParameter("id", id)
+                .setParameter("name", name)
+                .list();
+        return res.size() > 0;
+    }
+
+
+    public boolean isNameDuplicate(List<Object> idArr, String name) {
+        if (idArr != null && idArr.size() != 0) {
+            List<T> res;
+            Session tmpSession = this.getTmpSession();
+            String qry = "FROM " + this.modelName +
+                    " WHERE id IN (:idArr) AND name = (:name)";
+            res = tmpSession.createQuery(qry)
+                    .setParameterList("idArr", idArr)
+                    .setParameter("name", name)
+                    .list();
+            return res.size() > 0;
+        } else {
+            return false;
+        }
+    }
+
+
+    public boolean isNameDuplicate(List<Object> idArr, String name, Object id) {
+        if (idArr != null && idArr.size() != 0) {
+            List<T> res;
+            Session tmpSession = this.getTmpSession();
+            String qry = "FROM " + this.modelName +
+                    " WHERE id <> (:id) AND id IN (:idArr) AND name = (:name)";
+            res = tmpSession.createQuery(qry)
+                    .setParameter("id", id)
+                    .setParameterList("idArr", idArr)
+                    .setParameter("name", name)
+                    .list();
+            return res.size() > 0;
+        } else {
+            return false;
+        }
+    }
 }

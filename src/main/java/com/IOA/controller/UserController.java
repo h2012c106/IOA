@@ -1,7 +1,6 @@
 package com.IOA.controller;
 
 import com.IOA.model.GreenhouseModel;
-import com.IOA.model.SensorGreenhouseModel;
 import com.IOA.model.ThresholdModel;
 import com.IOA.model.UserModel;
 import com.IOA.service.*;
@@ -14,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -40,8 +40,7 @@ public class UserController {
     @ResponseBody
     public NormalMessage logoff(HttpServletRequest request) {
         String token = request.getHeader("Authorization");
-        USvc.logoff(token);
-        return new NormalMessage(true, null, null);
+        return USvc.logoff(token);
     }
 
 
@@ -62,16 +61,6 @@ public class UserController {
         String newPwd = (String) requestMap.get("newPwd");
 
         return USvc.alterSelfInfo(token, name, oldPwd, newPwd);
-    }
-
-
-    @RequestMapping(value = "/Greenhouse-Management/Unbind",
-            method = RequestMethod.POST)
-    @ResponseBody
-    public NormalMessage unbindGreenhouse(@RequestHeader("Authorization") String token,
-                                          @RequestBody Map<String, Object> requestMap) {
-        Integer greenhouseId = (Integer) requestMap.get("greenhouseId");
-        return GSvc.unbind(token, greenhouseId);
     }
 
     @RequestMapping(value = "/User-Management/Register-Greenhouse", method = RequestMethod.POST)
@@ -110,6 +99,16 @@ public class UserController {
         } else {
             return GSvc.alterInfo(token, greenhouse);
         }
+    }
+
+
+    @RequestMapping(value = "/Greenhouse-Management/Unbind",
+            method = RequestMethod.POST)
+    @ResponseBody
+    public NormalMessage unbindGreenhouse(@RequestHeader("Authorization") String token,
+                                          @RequestBody Map<String, Object> requestMap) {
+        Integer greenhouseId = (Integer) requestMap.get("greenhouseId");
+        return GSvc.unbind(token, greenhouseId);
     }
 
     @RequestMapping(value = "/Greenhouse-Management/Bind-Cluster", method = RequestMethod.POST)
@@ -151,13 +150,11 @@ public class UserController {
     @RequestMapping(value = "/Cluster-Management/Alter", method = RequestMethod.POST)
     @ResponseBody
     public NormalMessage alterCluster(@RequestHeader("Authorization") String token,
-                                      @RequestBody @Valid SensorGreenhouseModel cluster,
-                                      Errors errors) {
-        if (errors.hasErrors()) {
-            return new NormalMessage(false, MyErrorType.WrongParam, null);
-        } else {
-            return CSvc.alterInfo(token, cluster);
-        }
+                                      @RequestBody Map<String, Object> requestMap) {
+        String clusterId = (String) requestMap.get("clusterId");
+        String name = (String) requestMap.get("name");
+        String status = (String) requestMap.get("status");
+        return CSvc.alterInfo(token, clusterId, name, status);
     }
 
     @RequestMapping(value = "/Cluster-Management/Status", method = RequestMethod.POST)
@@ -179,13 +176,12 @@ public class UserController {
     @RequestMapping(value = "/Sensor-Management/Register-Threshold", method = RequestMethod.POST)
     @ResponseBody
     public NormalMessage registerThreshold(@RequestHeader("Authorization") String token,
-                                           @RequestBody @Valid ThresholdModel threshold,
-                                           Errors errors) {
-        if (errors.hasErrors()) {
-            return new NormalMessage(false, MyErrorType.WrongParam, null);
-        } else {
-            return SSvc.registerThreshold(token, threshold);
-        }
+                                           @RequestBody Map<String, Object> requestMap) {
+        Integer sensorId = (Integer) requestMap.get("sensorId");
+        String name = (String) requestMap.get("name");
+        BigDecimal minimum = (BigDecimal) requestMap.get("minimum");
+        BigDecimal maximum = (BigDecimal) requestMap.get("maximum");
+        return SSvc.registerThreshold(token, sensorId, name, minimum, maximum);
     }
 
     @RequestMapping(value = "/Sensor-Management/Info", method = RequestMethod.POST)

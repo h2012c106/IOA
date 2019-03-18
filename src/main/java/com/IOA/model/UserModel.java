@@ -1,18 +1,21 @@
 package com.IOA.model;
 
-import javax.validation.constraints.NotNull;
-
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "user", schema = "ioa", catalog = "")
 public class UserModel {
     private int id;
+
     @NotNull
     private String name;
+
     @NotNull
     private String pwd;
-    private String userType;
+
+    private Object userType;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -47,11 +50,11 @@ public class UserModel {
 
     @Basic
     @Column(name = "user_type")
-    public String getUserType() {
+    public Object getUserType() {
         return userType;
     }
 
-    public void setUserType(String userType) {
+    public void setUserType(Object userType) {
         this.userType = userType;
     }
 
@@ -59,23 +62,15 @@ public class UserModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         UserModel userModel = (UserModel) o;
-
-        if (id != userModel.id) return false;
-        if (name != null ? !name.equals(userModel.name) : userModel.name != null) return false;
-        if (pwd != null ? !pwd.equals(userModel.pwd) : userModel.pwd != null) return false;
-        if (userType != null ? !userType.equals(userModel.userType) : userModel.userType != null) return false;
-
-        return true;
+        return id == userModel.id &&
+                Objects.equals(name, userModel.name) &&
+                Objects.equals(pwd, userModel.pwd) &&
+                Objects.equals(userType, userModel.userType);
     }
 
     @Override
     public int hashCode() {
-        int result = id;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (pwd != null ? pwd.hashCode() : 0);
-        result = 31 * result + (userType != null ? userType.hashCode() : 0);
-        return result;
+        return Objects.hash(id, name, pwd, userType);
     }
 }

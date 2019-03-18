@@ -10,6 +10,7 @@ public class MyErrorType {
     public static final String GreenhouseAuthorization = "访问他人大棚或大棚不存在";
     public static final String GreenhouseNameDuplicate = "已拥有同名大棚";
     public static final String ClusterVerificationError = "传感器群认证失败";
+    public static final String ClusterBeingUsed = "此传感器群已在使用中";
     public static final String ClusterNameDuplicate = "大棚下已有同名传感器群";
     public static final String ClusterAuthorization = "传感器群不属于该大棚";
     public static final String ClusterUnexist = "传感器群未进行绑定或不存在";

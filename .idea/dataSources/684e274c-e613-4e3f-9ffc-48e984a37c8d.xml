@@ -924,303 +924,382 @@
       <Charset>utf8mb4</Charset>
       <DefaultForCharset>0</DefaultForCharset>
     </collation>
-    <table id="233" parent="5" name="device"/>
-    <table id="234" parent="5" name="greenhouse"/>
-    <table id="235" parent="5" name="result"/>
-    <table id="236" parent="5" name="sensor"/>
-    <table id="237" parent="5" name="sensor_greenhouse"/>
-    <table id="238" parent="5" name="threshold"/>
-    <table id="239" parent="5" name="user"/>
-    <table id="240" parent="5" name="user_greenhouse"/>
-    <column id="241" parent="233" name="id">
+    <table id="233" parent="5" name="cluster"/>
+    <table id="234" parent="5" name="cluster_device"/>
+    <table id="235" parent="5" name="cluster_sensor"/>
+    <table id="236" parent="5" name="device"/>
+    <table id="237" parent="5" name="greenhouse"/>
+    <table id="238" parent="5" name="greenhouse_cluster"/>
+    <table id="239" parent="5" name="greenhouse_result"/>
+    <table id="240" parent="5" name="result"/>
+    <table id="241" parent="5" name="select"/>
+    <table id="242" parent="5" name="sensor"/>
+    <table id="243" parent="5" name="sensor_result"/>
+    <table id="244" parent="5" name="sensor_threshold"/>
+    <table id="245" parent="5" name="threshold"/>
+    <table id="246" parent="5" name="user"/>
+    <table id="247" parent="5" name="user_greenhouse"/>
+    <column id="248" parent="233" name="id">
+      <Position>1</Position>
+      <DataType>char(17)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="249" parent="233" name="pwd">
+      <Position>2</Position>
+      <DataType>varchar(4)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="250" parent="233" name="status">
+      <Position>3</Position>
+      <DataType>enum(&apos;error&apos;, &apos;on&apos;, &apos;close&apos;)|0e</DataType>
+      <DefaultExpression>&apos;on&apos;</DefaultExpression>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="251" parent="233" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="252" parent="234" name="cluster_id">
+      <Position>1</Position>
+      <DataType>char(17)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="253" parent="234" name="device_id">
+      <Position>2</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="254" parent="234" name="nickname">
+      <Position>3</Position>
+      <DataType>varchar(32)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="255" parent="234" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>cluster_id
+device_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="256" parent="235" name="cluster_id">
+      <Position>1</Position>
+      <DataType>char(17)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="257" parent="235" name="sensor_id">
+      <Position>2</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="258" parent="235" name="inner_id">
+      <Position>3</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="259" parent="235" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>cluster_id
+sensor_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="260" parent="236" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="242" parent="233" name="cluster_id">
+    <column id="261" parent="236" name="name">
       <Position>2</Position>
-      <DataType>char(17)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="243" parent="233" name="name">
-      <Position>3</Position>
       <DataType>varchar(32)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="244" parent="233" name="nickname">
-      <Position>4</Position>
-      <DataType>varchar(8)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="245" parent="233" name="status">
-      <Position>5</Position>
+    <column id="262" parent="236" name="status">
+      <Position>3</Position>
       <DataType>enum(&apos;0&apos;, &apos;1&apos;, &apos;2&apos;)|0e</DataType>
       <DefaultExpression>&apos;0&apos;</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="246" parent="233" name="PRIMARY">
+    <key id="263" parent="236" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="247" parent="234" name="id">
+    <column id="264" parent="237" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="248" parent="234" name="name">
+    <column id="265" parent="237" name="name">
       <Position>2</Position>
       <DataType>varchar(32)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="249" parent="234" name="pwd">
+    <column id="266" parent="237" name="status">
       <Position>3</Position>
-      <DataType>varchar(4)|0s</DataType>
-      <DefaultExpression>&apos;1234&apos;</DefaultExpression>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="250" parent="234" name="status">
-      <Position>4</Position>
       <DataType>enum(&apos;error&apos;, &apos;on&apos;, &apos;close&apos;)|0e</DataType>
       <DefaultExpression>&apos;on&apos;</DefaultExpression>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="251" parent="234" name="crop">
-      <Position>5</Position>
+    <column id="267" parent="237" name="crop">
+      <Position>4</Position>
       <DataType>varchar(16)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="252" parent="234" name="longitude">
+    <column id="268" parent="237" name="longitude">
+      <Position>5</Position>
+      <DataType>decimal(10,7 digit)|0s</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="269" parent="237" name="latitude">
       <Position>6</Position>
       <DataType>decimal(10,7 digit)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="253" parent="234" name="latitude">
-      <Position>7</Position>
-      <DataType>decimal(10,7 digit)|0s</DataType>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <key id="254" parent="234" name="PRIMARY">
+    <key id="270" parent="237" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="255" parent="235" name="id">
-      <Position>1</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <SequenceIdentity>1</SequenceIdentity>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="256" parent="235" name="sensor_id">
-      <Position>2</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="257" parent="235" name="value">
-      <Position>3</Position>
-      <DataType>decimal(8,3 digit)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="258" parent="235" name="time">
-      <Position>4</Position>
-      <DataType>datetime|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="259" parent="235" name="minimum">
-      <Position>5</Position>
-      <DataType>decimal(8,3 digit)|0s</DataType>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="260" parent="235" name="maximum">
-      <Position>6</Position>
-      <DataType>decimal(8,3 digit)|0s</DataType>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="261" parent="235" name="greenhouse_id">
-      <Position>7</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <key id="262" parent="235" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <column id="263" parent="236" name="id">
-      <Position>1</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="264" parent="236" name="pwd">
-      <Position>2</Position>
-      <DataType>varchar(4)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="265" parent="236" name="type">
-      <Position>3</Position>
-      <DataType>varchar(16)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="266" parent="236" name="unit">
-      <Position>4</Position>
-      <DataType>varchar(8)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="267" parent="236" name="threshold_id">
-      <Position>5</Position>
-      <DataType>int(11)|0s</DataType>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="268" parent="236" name="cluster_id">
-      <Position>6</Position>
-      <DataType>char(17)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="269" parent="236" name="inner_id">
-      <Position>7</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <key id="270" parent="236" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <ColNames>id</ColNames>
-      <Primary>1</Primary>
-    </key>
-    <column id="271" parent="237" name="cluster_id">
+    <column id="271" parent="238" name="cluster_id">
       <Position>1</Position>
       <DataType>char(17)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="272" parent="237" name="greenhouse_id">
+    <column id="272" parent="238" name="greenhouse_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="273" parent="237" name="name">
+    <column id="273" parent="238" name="name">
       <Position>3</Position>
       <DataType>varchar(32)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="274" parent="237" name="status">
-      <Position>4</Position>
-      <DataType>enum(&apos;error&apos;, &apos;on&apos;, &apos;close&apos;)|0e</DataType>
-      <DefaultExpression>&apos;on&apos;</DefaultExpression>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <key id="275" parent="237" name="PRIMARY">
+    <key id="274" parent="238" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>cluster_id
 greenhouse_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="276" parent="238" name="id">
+    <column id="275" parent="239" name="greenhouse_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
-      <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="277" parent="238" name="sensor_id">
+    <column id="276" parent="239" name="result_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="278" parent="238" name="name">
-      <Position>3</Position>
-      <DataType>varchar(32)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="279" parent="238" name="minimum">
-      <Position>4</Position>
-      <DataType>decimal(8,3 digit)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="280" parent="238" name="maximum">
-      <Position>5</Position>
-      <DataType>decimal(8,3 digit)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <column id="281" parent="238" name="greenhouse_id">
-      <Position>6</Position>
-      <DataType>int(11)|0s</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <key id="282" parent="238" name="PRIMARY">
+    <key id="277" parent="239" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
-      <ColNames>id</ColNames>
+      <ColNames>greenhouse_id
+result_id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="283" parent="239" name="id">
+    <column id="278" parent="240" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="284" parent="239" name="name">
+    <column id="279" parent="240" name="value">
+      <Position>2</Position>
+      <DataType>decimal(8,3 digit)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="280" parent="240" name="time">
+      <Position>3</Position>
+      <DataType>datetime|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="281" parent="240" name="minimum">
+      <Position>4</Position>
+      <DataType>decimal(8,3 digit)|0s</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="282" parent="240" name="maximum">
+      <Position>5</Position>
+      <DataType>decimal(8,3 digit)|0s</DataType>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="283" parent="240" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="284" parent="241" name="sensor_id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="285" parent="241" name="threshold_id">
+      <Position>2</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="286" parent="241" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>sensor_id
+threshold_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="287" parent="242" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="288" parent="242" name="type">
       <Position>2</Position>
       <DataType>varchar(16)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="285" parent="239" name="pwd">
+    <column id="289" parent="242" name="unit">
       <Position>3</Position>
-      <DataType>char(32)|0s</DataType>
+      <DataType>varchar(8)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="286" parent="239" name="user_type">
-      <Position>4</Position>
-      <DataType>enum(&apos;farmer&apos;, &apos;admin&apos;)|0e</DataType>
-      <NotNull>1</NotNull>
-      <ColumnKind>normal</ColumnKind>
-    </column>
-    <key id="287" parent="239" name="PRIMARY">
+    <key id="290" parent="242" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
     </key>
-    <column id="288" parent="240" name="user_id">
+    <column id="291" parent="243" name="sensor_id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <column id="289" parent="240" name="greenhouse_id">
+    <column id="292" parent="243" name="result_id">
       <Position>2</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
-    <key id="290" parent="240" name="PRIMARY">
+    <key id="293" parent="243" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>sensor_id
+result_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="294" parent="244" name="sensor_id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="295" parent="244" name="threshold_id">
+      <Position>2</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="296" parent="244" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>sensor_id
+threshold_id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="297" parent="245" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="298" parent="245" name="name">
+      <Position>2</Position>
+      <DataType>varchar(32)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="299" parent="245" name="minimum">
+      <Position>3</Position>
+      <DataType>decimal(8,3 digit)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="300" parent="245" name="maximum">
+      <Position>4</Position>
+      <DataType>decimal(8,3 digit)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="301" parent="245" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="302" parent="246" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="303" parent="246" name="name">
+      <Position>2</Position>
+      <DataType>varchar(16)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="304" parent="246" name="pwd">
+      <Position>3</Position>
+      <DataType>char(32)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="305" parent="246" name="user_type">
+      <Position>4</Position>
+      <DataType>enum(&apos;farmer&apos;, &apos;admin&apos;)|0e</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="306" parent="246" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="307" parent="247" name="user_id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <column id="308" parent="247" name="greenhouse_id">
+      <Position>2</Position>
+      <DataType>int(11)|0s</DataType>
+      <NotNull>1</NotNull>
+      <ColumnKind>normal</ColumnKind>
+    </column>
+    <key id="309" parent="247" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>user_id
 greenhouse_id</ColNames>

@@ -9,17 +9,18 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
+// 这个东西它对于sensor避免去频繁搜索result表
 @Component
 public class MyPipe {
 
     // 第一层clusterId，第二层sensorId，第三层value+minimum+maximum
     private ConcurrentMap<String, Map<Integer, Map<String, BigDecimal>>> Sensor2Server;
-    private ConcurrentMap<String, Map<Integer, String>> Device2Server;
+//    private ConcurrentMap<String, Map<Integer, String>> Device2Server;
     private ConcurrentMap<String, Timestamp> RefreshTime;
 
     public MyPipe() {
         this.Sensor2Server = new ConcurrentHashMap<>();
-        this.Device2Server = new ConcurrentHashMap<>();
+//        this.Device2Server = new ConcurrentHashMap<>();
         this.RefreshTime = new ConcurrentHashMap<>();
     }
 
@@ -32,24 +33,25 @@ public class MyPipe {
         this.Sensor2Server.put(clusterId, sensorMap);
     }
 
-    public Map<Integer, String> getDevice2Server(String clusterId) {
-        return this.Device2Server.get(clusterId);
-    }
-
-    public void setDevice2Server(String clusterId, Map<Integer, String> deviceMap) {
-        this.Device2Server.put(clusterId, deviceMap);
-    }
+//    public Map<Integer, String> getDevice2Server(String clusterId) {
+//        return this.Device2Server.get(clusterId);
+//    }
+//
+//    public void setDevice2Server(String clusterId, Map<Integer, String> deviceMap) {
+//        this.Device2Server.put(clusterId, deviceMap);
+//    }
 
     public void clearCluster(String clusterId) {
         this.Sensor2Server.remove(clusterId);
-        this.Device2Server.remove(clusterId);
+//        this.Device2Server.remove(clusterId);
         this.RefreshTime.remove(clusterId);
     }
 
-    public void clearCluster(List<String> clusterIdArr) {
-        for (String clusterId : clusterIdArr) {
+    public void clearCluster(List<Object> clusterIdArr) {
+        for (Object clusterIdObj : clusterIdArr) {
+            String clusterId = (String) clusterIdObj;
             this.Sensor2Server.remove(clusterId);
-            this.Device2Server.remove(clusterId);
+//            this.Device2Server.remove(clusterId);
             this.RefreshTime.remove(clusterId);
         }
     }

@@ -9,28 +9,19 @@ import java.util.Objects;
 @Table(name = "result", schema = "ioa", catalog = "")
 public class ResultModel {
     private int id;
-    private int sensorId;
     private BigDecimal value;
     private Timestamp time;
     private BigDecimal minimum;
     private BigDecimal maximum;
-    private int greenhouseId;
 
     public ResultModel() {
     }
 
-    public ResultModel(int sensorId,
-                       BigDecimal value,
-                       Timestamp time,
-                       BigDecimal minimum,
-                       BigDecimal maximum,
-                       int greenhouseId) {
-        this.sensorId = sensorId;
+    public ResultModel(BigDecimal value, Timestamp time, BigDecimal minimum, BigDecimal maximum) {
         this.value = value;
         this.time = time;
         this.minimum = minimum;
         this.maximum = maximum;
-        this.greenhouseId = greenhouseId;
     }
 
     @Id
@@ -42,16 +33,6 @@ public class ResultModel {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    @Basic
-    @Column(name = "sensor_id")
-    public int getSensorId() {
-        return sensorId;
-    }
-
-    public void setSensorId(int sensorId) {
-        this.sensorId = sensorId;
     }
 
     @Basic
@@ -94,24 +75,12 @@ public class ResultModel {
         this.maximum = maximum;
     }
 
-    @Basic
-    @Column(name = "greenhouse_id")
-    public int getGreenhouseId() {
-        return greenhouseId;
-    }
-
-    public void setGreenhouseId(int greenhouseId) {
-        this.greenhouseId = greenhouseId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ResultModel that = (ResultModel) o;
         return id == that.id &&
-                sensorId == that.sensorId &&
-                greenhouseId == that.greenhouseId &&
                 Objects.equals(value, that.value) &&
                 Objects.equals(time, that.time) &&
                 Objects.equals(minimum, that.minimum) &&
@@ -120,6 +89,6 @@ public class ResultModel {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sensorId, value, time, minimum, maximum, greenhouseId);
+        return Objects.hash(id, value, time, minimum, maximum);
     }
 }

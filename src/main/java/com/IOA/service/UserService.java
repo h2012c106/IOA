@@ -23,25 +23,34 @@ public class UserService {
     UserDAO UDAO;
 
     @Autowired
-    SensorDAO SDAO;
+    UserGreenhouseDAO UGDAO;
+
+    @Autowired
+    GreenhouseDAO GDAO;
+
+    @Autowired
+    GreenhouseClusterDAO GCDAO;
+
+    @Autowired
+    ClusterDAO CDAO;
+
+    @Autowired
+    ClusterDeviceDAO CDDAO;
+
+    @Autowired
+    ClusterSensorDAO CSDAO;
 
     @Autowired
     DeviceDAO DDAO;
 
     @Autowired
+    SelectDAO SeDAO;
+
+    @Autowired
+    SensorThresholdDAO STDAO;
+
+    @Autowired
     ThresholdDAO TDAO;
-
-    @Autowired
-    ResultDAO RDAO;
-
-    @Autowired
-    SensorGreenhouseDAO SGDAO;
-
-    @Autowired
-    UserGreenhouseDAO UGDAO;
-
-    @Autowired
-    GreenhouseDAO GDAO;
 
     @Autowired
     MyPipe Pipe;
@@ -63,17 +72,7 @@ public class UserService {
         UserModel user = UDAO.searchBySomeId(id, "id").get(0);
 
         // 找出用这个名字的用户，如果是自己就忽略，是别人的话就说明重名，不可用
-        boolean canUseThisName = true;
-        if (!name.equals(user.getName())) {
-            List<UserModel> useThisNameUserArr = UDAO.searchBySomeId(name, "name");
-            for (UserModel tmpUser : useThisNameUserArr) {
-                if (tmpUser.getId() != id) {
-                    canUseThisName = false;
-                    break;
-                }
-            }
-        }
-        if (!canUseThisName) {
+        if (UDAO.isNameDuplicate(name, id)) {
             return new NormalMessage(false, MyErrorType.UserNameDuplicate, null);
         }
 
@@ -89,55 +88,64 @@ public class UserService {
     }
 
 
-    public void logoff(String token) {
+    public NormalMessage logoff(String token) {
         Map<String, Object> userInfo = TokenManager.parseToken(token);
         Object id = userInfo.get("id");
-        // 方案一：把他与他的大棚+传感器解绑，再把他除名，结果->人除名，但是传感器与大棚依然在数据库中存在，
-        // 且不取消之间的绑定关系，但仅可以被管理员查看
-//        UGDAO.deleteBySomeId(tmpList,"userId");
-//        USDAO.deleteBySomeId(tmpList,"userId");
-//        UDAO.deleteBySomeId(tmpList,"id");
 
-        // 方案二：把他与他的大棚+传感器解绑，再把他除名，结果->人除名，但是传感器与大棚依然在数据库中存在，
-        // 并取消之间的绑定关系，但仅可以被管理员查看
-
-        // 方案三：把他与他的大棚+传感器解绑，清除其大棚数据，再把他除名，结果->人除名，
-        // 仅保留传感器数据（比较合理）
-        List<UserGreenhouseModel> abandonedGreenhouseArr = UGDAO.searchBySomeId(id, "userId");
+        // 找到此人名下的所有大棚
+        List<UserGreenhouseModel> abandonedGreenhouseArr
+                = UGDAO.searchBySomeId(id, "userId");
         List<Object> abandonedGreenhouseIdArr = abandonedGreenhouseArr.stream()
                 .map(UserGreenhouseModel::getGreenhouseId)
                 .collect(Collectors.toList());
-
-        // 把所有大棚内的设备全部关闭
-        List<String> clusterIdArr = SGDAO.searchBySomeId(abandonedGreenhouseIdArr, "greenhouseId")
-                .stream()
-                .map(SensorGreenhouseModel::getClusterId)
+        // 找到所有大棚内所有传感器群
+        List<GreenhouseClusterModel> abandonedClusterArr
+                = GCDAO.searchBySomeId(abandonedGreenhouseIdArr, "greenhouseId");
+        List<Object> abandonedClusterIdArr = abandonedClusterArr.stream()
+                .map(GreenhouseClusterModel::getClusterId)
                 .collect(Collectors.toList());
-        DDAO.closeAll(clusterIdArr);
+        // 找到所有大棚内所有传感器群的所有设备
+        List<ClusterDeviceModel> abandonedDeviceArr
+                = CDDAO.searchBySomeId(abandonedClusterIdArr, "clusterId");
+        List<Object> abandonedDeviceIdArr = abandonedDeviceArr.stream()
+                .map(ClusterDeviceModel::getDeviceId)
+                .collect(Collectors.toList());
+        // 找到所有大棚内所有传感器群的所有传感器
+        List<ClusterSensorModel> abandonedSensorArr
+                = CSDAO.searchBySomeId(abandonedClusterIdArr, "clusterId");
+        List<Object> abandonedSensorIdArr = abandonedSensorArr.stream()
+                .map(ClusterSensorModel::getSensorId)
+                .collect(Collectors.toList());
+        // 找到所有大棚内所有传感器群的所有传感器的所有阈值
+        List<SensorThresholdModel> abandonedThresholdArr
+                = STDAO.searchBySomeId(abandonedSensorIdArr, "sensorId");
+        List<Object> abandonedThresholdIdArr = abandonedThresholdArr.stream()
+                .map(SensorThresholdModel::getThresholdId)
+                .collect(Collectors.toList());
 
-        // 清空所有大棚内所有传感器群的缓存
-        Pipe.clearCluster(clusterIdArr);
+        // 删除传感器对应的阈值对以及其目前选择的阈值
+        SeDAO.deleteBySomeId(abandonedSensorIdArr, "sensorId");
+        STDAO.deleteBySomeId(abandonedSensorIdArr, "sensorId");
+        TDAO.deleteBySomeId(abandonedThresholdIdArr, "id");
 
+        // 将所有设备全部关闭
+        DDAO.closeAll(abandonedDeviceIdArr);
+
+        // 将缓存内所有结果清除
+        Pipe.clearCluster(abandonedClusterIdArr);
+
+        // 将所有传感器群解绑并且把没问题的关掉
+        GCDAO.deleteBySomeId(abandonedGreenhouseIdArr, "greenhouseId");
+        CDAO.updateStatus(abandonedClusterIdArr, "close");
+
+        // 将所有大棚解绑并删除
         UGDAO.deleteBySomeId(id, "userId");
-        SGDAO.deleteBySomeId(abandonedGreenhouseIdArr, "greenhouseId");
-
-        // 把所有大棚内传感器的阈值设定全部消除
-        List<ThresholdModel> thresholdModelList
-                =TDAO.searchBySomeId(abandonedGreenhouseIdArr,"greenhouseId");
-        List<Integer> thresholdIdArr=thresholdModelList
-                .stream()
-                .map(ThresholdModel::getId)
-                .collect(Collectors.toList());
-        SDAO.updateThreshold(thresholdIdArr);
-        TDAO.deleteBySomeId(abandonedGreenhouseIdArr,"greenhouseId");
-
-//        RDAO.deleteBySomeId(greenhouseId,"greenhouseId");
-
         GDAO.deleteBySomeId(abandonedGreenhouseIdArr, "id");
+
+        // 删除此用户
         UDAO.deleteBySomeId(id, "id");
 
-        // 方案四：把他与他的大棚+传感器解绑，且删除其大棚、传感器数据，再把他除名，
-        // 结果->与此人相关的一切东西完全消失
+        return new NormalMessage(true, null, null);
     }
 
     public NormalMessage registerGreenhouse(String token, GreenhouseModel greenhouse) {

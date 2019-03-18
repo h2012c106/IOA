@@ -23,26 +23,17 @@ public class AccessService {
     @Autowired
     private UserDAO UDAO;
 
-    @Autowired
-    private GreenhouseDAO GDAO;
-
-    @Autowired
-    private UserGreenhouseDAO UGDAO;
-
-    @Autowired
-    private SensorGreenhouseDAO SGDAO;
-
     public NormalMessage register(UserModel user) {
         // 查找数据库中是否存在此用户名，存在则打回，否则通过
-        if (UDAO.searchBySomeId(user.getName(), "name").size() == 0) {
+        if (!UDAO.isNameDuplicate(user.getName())) {
             user.setPwd(MD5Manager.encode(user.getPwd()));
             Integer newId = UDAO.saveBackId(user);
             user.setId(newId);
-            return new NormalMessage(false, MyErrorType.UserNameDuplicate, null);
-        } else {
             Map<String, String> message = new HashMap<>();
             message.put("token", TokenManager.generateToken(user));
             return new NormalMessage(true, null, message);
+        } else {
+            return new NormalMessage(false, MyErrorType.UserNameDuplicate, null);
         }
     }
 

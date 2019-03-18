@@ -5,9 +5,9 @@ import javax.persistence.Id;
 import java.io.Serializable;
 import java.util.Objects;
 
-public class SensorGreenhouseModelPK implements Serializable {
+public class ClusterSensorModelPK implements Serializable {
     private String clusterId;
-    private int greenhouseId;
+    private int sensorId;
 
     @Column(name = "cluster_id")
     @Id
@@ -19,27 +19,27 @@ public class SensorGreenhouseModelPK implements Serializable {
         this.clusterId = clusterId;
     }
 
-    @Column(name = "greenhouse_id")
+    @Column(name = "sensor_id")
     @Id
-    public int getGreenhouseId() {
-        return greenhouseId;
+    public int getSensorId() {
+        return sensorId;
     }
 
-    public void setGreenhouseId(int greenhouseId) {
-        this.greenhouseId = greenhouseId;
+    public void setSensorId(int sensorId) {
+        this.sensorId = sensorId;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        SensorGreenhouseModelPK that = (SensorGreenhouseModelPK) o;
-        return greenhouseId == that.greenhouseId &&
+        ClusterSensorModelPK that = (ClusterSensorModelPK) o;
+        return sensorId == that.sensorId &&
                 Objects.equals(clusterId, that.clusterId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(clusterId, greenhouseId);
+        return Objects.hash(clusterId, sensorId);
     }
 }

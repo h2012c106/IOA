@@ -1,41 +1,42 @@
 package com.IOA.model;
 
 import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @DynamicInsert
-@Table(name = "device", schema = "ioa", catalog = "")
-public class DeviceModel {
-    private int id;
-    private String name;
+@Table(name = "cluster", schema = "ioa", catalog = "")
+public class ClusterModel {
+    @Length(min = 17, max = 17)
+    private String id;
+    private String pwd;
     private String status;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 
     @Basic
-    @Column(name = "name")
-    public String getName() {
-        return name;
+    @Column(name = "pwd")
+    public String getPwd() {
+        return pwd;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
     }
 
     @Basic
-    @Column(name = "status", columnDefinition = "enum('0','1','2') DEFAULT '0'")
+    @Column(name = "status", columnDefinition = "enum('error','on','close') DEFAULT 'on'")
     public String getStatus() {
         return status;
     }
@@ -48,14 +49,14 @@ public class DeviceModel {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DeviceModel that = (DeviceModel) o;
-        return id == that.id &&
-                Objects.equals(name, that.name) &&
+        ClusterModel that = (ClusterModel) o;
+        return Objects.equals(id, that.id) &&
+                Objects.equals(pwd, that.pwd) &&
                 Objects.equals(status, that.status);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, name, status);
+        return Objects.hash(id, pwd, status);
     }
 }

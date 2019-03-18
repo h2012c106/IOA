@@ -11,9 +11,6 @@ public class ThresholdModel {
     private int id;
 
     @NotNull
-    private int sensorId;
-
-    @NotNull
     private String name;
 
     @NotNull
@@ -22,7 +19,14 @@ public class ThresholdModel {
     @NotNull
     private BigDecimal maximum;
 
-    private int greenhouseId;
+    public ThresholdModel() {
+    }
+
+    public ThresholdModel(@NotNull String name, @NotNull BigDecimal minimum, @NotNull BigDecimal maximum) {
+        this.name = name;
+        this.minimum = minimum;
+        this.maximum = maximum;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -33,16 +37,6 @@ public class ThresholdModel {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    @Basic
-    @Column(name = "sensor_id")
-    public int getSensorId() {
-        return sensorId;
-    }
-
-    public void setSensorId(int sensorId) {
-        this.sensorId = sensorId;
     }
 
     @Basic
@@ -75,24 +69,12 @@ public class ThresholdModel {
         this.maximum = maximum;
     }
 
-    @Basic
-    @Column(name = "greenhouse_id")
-    public int getGreenhouseId() {
-        return greenhouseId;
-    }
-
-    public void setGreenhouseId(int greenhouseId) {
-        this.greenhouseId = greenhouseId;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         ThresholdModel that = (ThresholdModel) o;
         return id == that.id &&
-                sensorId == that.sensorId &&
-                greenhouseId == that.greenhouseId &&
                 Objects.equals(name, that.name) &&
                 Objects.equals(minimum, that.minimum) &&
                 Objects.equals(maximum, that.maximum);
@@ -100,6 +82,6 @@ public class ThresholdModel {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, sensorId, name, minimum, maximum, greenhouseId);
+        return Objects.hash(id, name, minimum, maximum);
     }
 }

@@ -9,18 +9,10 @@ import java.util.List;
 public class UserGreenhouseDAO extends BasicDAO<UserGreenhouseModel> {
 
     public boolean doesGreenhouseBelongToUser(int userId, int greenhouseId) {
-        // 这个用户名下的大棚列表
-        List<UserGreenhouseModel> UGList = this.searchBySomeId(userId, "userId");
+        List<UserGreenhouseModel> UGList
+                = this.searchBySomeId(userId, "userId", greenhouseId, "greenhouseId");
 
-        // 若在此用户的大棚列表中找不到他要访问的，那么禁止访问
-        boolean isHis = false;
-        for (UserGreenhouseModel tmpUG : UGList) {
-            if (greenhouseId == tmpUG.getGreenhouseId()) {
-                isHis = true;
-                break;
-            }
-        }
-        return isHis;
+        return UGList.size() > 0;
     }
 
 }

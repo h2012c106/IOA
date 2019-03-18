@@ -1,10 +1,13 @@
 package com.IOA.dao;
 
+import com.IOA.model.ThresholdModel;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.stereotype.Component;
 
 import com.IOA.model.GreenhouseModel;
+
+import java.util.List;
 
 @Component
 public class GreenhouseDAO extends BasicDAO<GreenhouseModel> {
