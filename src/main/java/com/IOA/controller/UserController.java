@@ -38,16 +38,14 @@ public class UserController {
 
     @RequestMapping(value = "/User-Management/Logoff", method = RequestMethod.POST)
     @ResponseBody
-    public NormalMessage logoff(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
+    public NormalMessage logoff(@RequestHeader("Authorization") String token) {
         return USvc.logoff(token);
     }
 
 
     @RequestMapping(value = "/User-Management/Info", method = RequestMethod.POST)
     @ResponseBody
-    public NormalMessage getSelfInfo(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
+    public NormalMessage getSelfInfo(@RequestHeader("Authorization") String token) {
         return USvc.getSelfInfo(token);
     }
 

@@ -11,6 +11,15 @@ public class ClusterDeviceModel {
     private int deviceId;
     private String nickname;
 
+    public ClusterDeviceModel() {
+    }
+
+    public ClusterDeviceModel(String clusterId, int deviceId, String nickname) {
+        this.clusterId = clusterId;
+        this.deviceId = deviceId;
+        this.nickname = nickname;
+    }
+
     @Id
     @Column(name = "cluster_id")
     public String getClusterId() {

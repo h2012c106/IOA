@@ -152,6 +152,7 @@ public class TransmissionService {
                 while ((msg = in.readLine()) != null) {
 
                     //////////// 收到传感器群信息后的逻辑 ////////////
+                    System.out.println("收到: " + msg);
 
                     // 拿个时间戳
                     Timestamp currentTime = new Timestamp(System.currentTimeMillis());
@@ -200,6 +201,8 @@ public class TransmissionService {
                         this.fulfillPipe(clusterId, sensorMap, currentTime);
                         this.fulfillDB(singleGC.get(0).getGreenhouseId(),
                                 sensorMap, deviceMap, sensorOfClusterArr, currentTime);
+
+                        System.out.println("处理TCP信息并保存花了: " + (System.currentTimeMillis() - currentTime.getTime()) + "ms");
                     }
 
                     //////////// 收到传感器群信息后的逻辑 ////////////

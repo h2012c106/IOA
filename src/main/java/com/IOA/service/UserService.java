@@ -188,4 +188,95 @@ public class UserService {
         message.put("greenhouseArr", GDAO.searchBySomeId(greenhouseIdArr, "id"));
         return new NormalMessage(true, null, message);
     }
+
+
+    public NormalMessage getList() {
+        List<UserModel> userArr = UDAO.searchAll();
+        Map<String, List<UserModel>> message = new HashMap<>();
+        message.put("userArr", userArr);
+        return new NormalMessage(true, null, message);
+    }
+
+    public NormalMessage getSomeoneInfo(Integer id) {
+        List<UserModel> userArr = UDAO.searchBySomeId(id, "id");
+        if (userArr.size() == 0) {
+            return new NormalMessage(false, MyErrorType.UserUnexist, null);
+        } else {
+            return new NormalMessage(true, null, userArr.get(0));
+        }
+    }
+
+    public NormalMessage getSomeoneGreenhouseList(Integer id) {
+        List<UserGreenhouseModel> greenhouseUserArr
+                = UGDAO.searchBySomeId(id, "userId");
+        List<Object> greenhouseIdArr = greenhouseUserArr.stream()
+                .map(UserGreenhouseModel::getGreenhouseId)
+                .collect(Collectors.toList());
+        Map<String, List<GreenhouseModel>> message = new HashMap<>();
+        message.put("greenhouseArr", GDAO.searchBySomeId(greenhouseIdArr, "id"));
+        return new NormalMessage(true, null, message);
+    }
+
+    public NormalMessage alterSomeonePwd(Integer id, String newPwd) {
+        return UDAO.adminUpdate(id, newPwd)
+                ? new NormalMessage(true, null, null)
+                : new NormalMessage(false, MyErrorType.UpdateError, null);
+    }
+
+    public NormalMessage deleteSomeone(Integer id){
+        // 找到此人名下的所有大棚
+        List<UserGreenhouseModel> abandonedGreenhouseArr
+                = UGDAO.searchBySomeId(id, "userId");
+        List<Object> abandonedGreenhouseIdArr = abandonedGreenhouseArr.stream()
+                .map(UserGreenhouseModel::getGreenhouseId)
+                .collect(Collectors.toList());
+        // 找到所有大棚内所有传感器群
+        List<GreenhouseClusterModel> abandonedClusterArr
+                = GCDAO.searchBySomeId(abandonedGreenhouseIdArr, "greenhouseId");
+        List<Object> abandonedClusterIdArr = abandonedClusterArr.stream()
+                .map(GreenhouseClusterModel::getClusterId)
+                .collect(Collectors.toList());
+        // 找到所有大棚内所有传感器群的所有设备
+        List<ClusterDeviceModel> abandonedDeviceArr
+                = CDDAO.searchBySomeId(abandonedClusterIdArr, "clusterId");
+        List<Object> abandonedDeviceIdArr = abandonedDeviceArr.stream()
+                .map(ClusterDeviceModel::getDeviceId)
+                .collect(Collectors.toList());
+        // 找到所有大棚内所有传感器群的所有传感器
+        List<ClusterSensorModel> abandonedSensorArr
+                = CSDAO.searchBySomeId(abandonedClusterIdArr, "clusterId");
+        List<Object> abandonedSensorIdArr = abandonedSensorArr.stream()
+                .map(ClusterSensorModel::getSensorId)
+                .collect(Collectors.toList());
+        // 找到所有大棚内所有传感器群的所有传感器的所有阈值
+        List<SensorThresholdModel> abandonedThresholdArr
+                = STDAO.searchBySomeId(abandonedSensorIdArr, "sensorId");
+        List<Object> abandonedThresholdIdArr = abandonedThresholdArr.stream()
+                .map(SensorThresholdModel::getThresholdId)
+                .collect(Collectors.toList());
+
+        // 删除传感器对应的阈值对以及其目前选择的阈值
+        SeDAO.deleteBySomeId(abandonedSensorIdArr, "sensorId");
+        STDAO.deleteBySomeId(abandonedSensorIdArr, "sensorId");
+        TDAO.deleteBySomeId(abandonedThresholdIdArr, "id");
+
+        // 将所有设备全部关闭
+        DDAO.closeAll(abandonedDeviceIdArr);
+
+        // 将缓存内所有结果清除
+        Pipe.clearCluster(abandonedClusterIdArr);
+
+        // 将所有传感器群解绑并且把没问题的关掉
+        GCDAO.deleteBySomeId(abandonedGreenhouseIdArr, "greenhouseId");
+        CDAO.updateStatus(abandonedClusterIdArr, "close");
+
+        // 将所有大棚解绑并删除
+        UGDAO.deleteBySomeId(id, "userId");
+        GDAO.deleteBySomeId(abandonedGreenhouseIdArr, "id");
+
+        // 删除此用户
+        UDAO.deleteBySomeId(id, "id");
+
+        return new NormalMessage(true, null, null);
+    }
 }

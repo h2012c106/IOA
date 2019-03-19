@@ -4,6 +4,7 @@ import com.IOA.dao.*;
 import com.IOA.model.*;
 import com.IOA.util.MyErrorType;
 import com.IOA.util.MyPipe;
+import com.IOA.util.SensorConfig;
 import com.IOA.util.TokenManager;
 import com.IOA.vo.NormalMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -146,10 +147,16 @@ public class ClusterService {
                 .map(ClusterSensorModel::getSensorId)
                 .collect(Collectors.toList());
 
+        // 开始计时
+        long startTime = System.currentTimeMillis();
+        String hasCache = "有";
+
         // 试着从缓存中拿出这个传感器的信息以及时间
         Map<Integer, Map<String, BigDecimal>> SensorValuesMap = Pipe.getSensor2Server(clusterId);
         // 若缓存中没有这个传感器群的信息，那么去数据库中找
         if (SensorValuesMap == null) {
+            hasCache = "无";
+
             SensorValuesMap = new HashMap<>();
             // 先拿到这个传感器属于的大棚，避免看数据时看到这个传感器在先前的大棚里的数据
             List<GreenhouseClusterModel> sensorGreenhouseModelArr
@@ -199,6 +206,9 @@ public class ClusterService {
             sensorArr.add(tmpMap);
         }
 
+        // 停止计时
+        System.out.println(hasCache + "缓存时取出传感器群传感器数据串花了: " + (System.currentTimeMillis() - startTime) + "ms");
+
         List<Map<String, Object>> deviceArr = new ArrayList<>();
 
         // 拿到这个传感器群对应的设备信息
@@ -243,4 +253,127 @@ public class ClusterService {
     }
 
 
+    public NormalMessage register(ClusterModel cluster) {
+        String id = cluster.getId();
+
+        // 如果此id已经有了
+        if (CDAO.isNameDuplicate(id)) {
+            return new NormalMessage(false, MyErrorType.ClusterBeenRegistered, null);
+        }
+
+        CDAO.save(cluster);
+        // 注册它的传感器
+        for (Map<String, String> tmpSensorMap : SensorConfig.SensorArr) {
+            String type = tmpSensorMap.get("type");
+            String unit = tmpSensorMap.get("unit");
+            int innerId = Integer.parseInt(tmpSensorMap.get("innerId"));
+            Integer sensorId = SDAO.saveBackId(new SensorModel(type, unit));
+            CSDAO.save(new ClusterSensorModel(id, sensorId, innerId));
+        }
+        // 注册它的设备
+        for (Map<String, String> tmpDeviceMap : SensorConfig.DeviceArr) {
+            String name = tmpDeviceMap.get("name");
+            String nickname = tmpDeviceMap.get("nickname");
+            Integer deviceId = DDAO.saveBackId(new DeviceModel(name));
+            CDDAO.save(new ClusterDeviceModel(id, deviceId, nickname));
+        }
+
+        return new NormalMessage(true, null, null);
+    }
+
+    public NormalMessage getList() {
+        List<Map<String, Object>> clusterArr = new ArrayList<>();
+        List<ClusterModel> clusterModelArr = CDAO.searchAll();
+        for (ClusterModel tmpClusterModel : clusterModelArr) {
+            String id = tmpClusterModel.getId();
+
+            Map<String, Object> tmpMap = new HashMap<>();
+            tmpMap.put("clusterId", id);
+            tmpMap.put("status", tmpClusterModel.getStatus());
+
+            List<GreenhouseClusterModel> justForName
+                    = GCDAO.searchBySomeId(id, "clusterId");
+            if (justForName.size() == 0) {
+                tmpMap.put("isFunctioning", false);
+                tmpMap.put("name", null);
+            } else {
+                tmpMap.put("isFunctioning", true);
+                tmpMap.put("name", justForName.get(0).getName());
+            }
+
+            clusterArr.add(tmpMap);
+        }
+
+        Map<String, List<Map<String, Object>>> message = new HashMap<>();
+        message.put("clusterArr", clusterArr);
+        return new NormalMessage(true, null, message);
+    }
+
+    public NormalMessage getInfo(String clusterId) {
+        List<ClusterModel> singleCluster = CDAO.searchBySomeId(clusterId, "id");
+        if (singleCluster.size() == 0) {
+            return new NormalMessage(false, MyErrorType.ClusterUnexist, null);
+        } else {
+            return new NormalMessage(true, null, singleCluster.get(0));
+        }
+    }
+
+    public NormalMessage alterPwd(ClusterModel cluster) {
+        String id = cluster.getId();
+        String pwd = cluster.getPwd();
+        return CDAO.updatePwd(id, pwd)
+                ? new NormalMessage(true, null, null)
+                : new NormalMessage(false, MyErrorType.UpdateError, null);
+    }
+
+    public NormalMessage getMember(String clusterId) {
+        List<ClusterSensorModel> sensorOfClusterArr
+                = CSDAO.searchBySomeId(clusterId, "clusterId");
+        List<Object> sensorIdOfClusterArr = sensorOfClusterArr.stream()
+                .map(ClusterSensorModel::getSensorId)
+                .collect(Collectors.toList());
+        List<SensorModel> sensorArr
+                = SDAO.searchBySomeId(sensorIdOfClusterArr, "id");
+
+        List<ClusterDeviceModel> deviceOfClusterArr
+                = CDDAO.searchBySomeId(clusterId, "clusterId");
+        List<Object> deviceIdOfClusterArr = deviceOfClusterArr.stream()
+                .map(ClusterDeviceModel::getDeviceId)
+                .collect(Collectors.toList());
+        List<DeviceModel> deviceArr
+                = DDAO.searchBySomeId(deviceIdOfClusterArr, "id");
+
+        Map<String, Object> message = new HashMap<>();
+        message.put("sensorArr", sensorArr);
+        message.put("deviceArr", deviceArr);
+        return new NormalMessage(true, null, message);
+    }
+
+    public NormalMessage delete(String clusterId) {
+        List<GreenhouseClusterModel> findIfBelongToGreenhouse
+                = GCDAO.searchBySomeId(clusterId, "clusterId");
+        if (findIfBelongToGreenhouse.size() != 0) {
+            return new NormalMessage(false, MyErrorType.ClusterBeingUsed, null);
+        }
+
+        List<ClusterSensorModel> sensorOfClusterArr
+                = CSDAO.searchBySomeId(clusterId, "clusterId");
+        List<Object> sensorIdOfClusterArr = sensorOfClusterArr.stream()
+                .map(ClusterSensorModel::getSensorId)
+                .collect(Collectors.toList());
+
+        List<ClusterDeviceModel> deviceOfClusterArr
+                = CDDAO.searchBySomeId(clusterId, "clusterId");
+        List<Object> deviceIdOfClusterArr = deviceOfClusterArr.stream()
+                .map(ClusterDeviceModel::getDeviceId)
+                .collect(Collectors.toList());
+
+        SDAO.deleteBySomeId(sensorIdOfClusterArr, "id");
+        DDAO.deleteBySomeId(deviceIdOfClusterArr, "id");
+        CSDAO.deleteBySomeId(clusterId, "clusterId");
+        CDDAO.deleteBySomeId(clusterId, "clusterId");
+        CDAO.deleteBySomeId(clusterId, "id");
+
+        return new NormalMessage(true, null, null);
+    }
 }

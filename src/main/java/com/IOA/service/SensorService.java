@@ -85,6 +85,10 @@ public class SensorService {
         }
         String clusterId = singleCS.get(0).getClusterId();
 
+        // 开始计时
+        long startTime = System.currentTimeMillis();
+        String hasCache;
+
         Timestamp timestamp = Pipe.getRefreshTime(clusterId);
         Map<Integer, Map<String, BigDecimal>> sensorCache
                 = Pipe.getSensor2Server(clusterId);
@@ -92,6 +96,8 @@ public class SensorService {
         BigDecimal minimum = null;
         BigDecimal maximum = null;
         if (sensorCache == null || timestamp == null) {
+            hasCache = "无";
+
             timestamp = null;
 
             // 把传感器群所属的大棚找出来
@@ -109,6 +115,8 @@ public class SensorService {
                 maximum = singleResult.getMaximum();
             }
         } else {
+            hasCache = "有";
+
             value = sensorCache.get(sensorId) == null
                     ? null : sensorCache.get(sensorId).get("value");
             minimum = sensorCache.get(sensorId) == null
@@ -116,6 +124,9 @@ public class SensorService {
             maximum = sensorCache.get(sensorId) == null
                     ? null : sensorCache.get(sensorId).get("maximum");
         }
+
+        // 停止计时
+        System.out.println(hasCache + "缓存时取出单个传感器数据串花了: " + (System.currentTimeMillis() - startTime) + "ms");
 
         Map<String, Object> message = new HashMap<>();
         message.put("value", value);

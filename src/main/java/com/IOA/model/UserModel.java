@@ -15,7 +15,7 @@ public class UserModel {
     @NotNull
     private String pwd;
 
-    private Object userType;
+    private String userType;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -50,11 +50,11 @@ public class UserModel {
 
     @Basic
     @Column(name = "user_type")
-    public Object getUserType() {
+    public String getUserType() {
         return userType;
     }
 
-    public void setUserType(Object userType) {
+    public void setUserType(String userType) {
         this.userType = userType;
     }
 

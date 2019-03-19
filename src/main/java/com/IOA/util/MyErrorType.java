@@ -14,6 +14,7 @@ public class MyErrorType {
     public static final String ClusterNameDuplicate = "大棚下已有同名传感器群";
     public static final String ClusterAuthorization = "传感器群不属于该大棚";
     public static final String ClusterUnexist = "传感器群未进行绑定或不存在";
+    public static final String ClusterBeenRegistered = "传感器群已注册";
     public static final String DeviceUnexist = "远程控制设备不存在";
     public static final String OrderFail = "远程控制命令发送失败";
     public static final String SensorUnexist = "传感器不存在";

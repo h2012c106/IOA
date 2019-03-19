@@ -16,16 +16,6 @@
         <!-- 指定自动生成数据表的策略 -->
         <property name="hbm2ddl.auto">update</property>
 
-        <mapping class="com.IOA.model.DeviceModel"/>
-        <mapping class="com.IOA.model.GreenhouseModel"/>
-        <mapping class="com.IOA.model.ResultModel"/>
-        <mapping class="com.IOA.model.SensorModel"/>
-        <mapping class="com.IOA.model.SensorGreenhouseModel"/>
-        <mapping class="com.IOA.model.ThresholdModel"/>
-        <mapping class="com.IOA.model.UserModel"/>
-        <mapping class="com.IOA.model.UserGreenhouseModel"/>
-        <mapping class="com.IOA.model.UserSensorModel"/>
-
 
     </session-factory>
 </hibernate-configuration>

@@ -11,6 +11,15 @@ public class ClusterSensorModel {
     private int sensorId;
     private int innerId;
 
+    public ClusterSensorModel() {
+    }
+
+    public ClusterSensorModel(String clusterId, int sensorId, int innerId) {
+        this.clusterId = clusterId;
+        this.sensorId = sensorId;
+        this.innerId = innerId;
+    }
+
     @Id
     @Column(name = "cluster_id")
     public String getClusterId() {

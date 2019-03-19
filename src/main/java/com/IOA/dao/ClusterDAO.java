@@ -45,4 +45,18 @@ public class ClusterDAO extends BasicDAO<ClusterModel> {
         }
     }
 
+    public boolean updatePwd(String id, String newPwd) {
+        Session tmpSession = this.getTmpSession();
+        Transaction transaction = tmpSession.beginTransaction();
+        String qry = "UPDATE ClusterModel " +
+                "SET pwd = (:pwd) " +
+                "WHERE id = (:id)";
+        int updateRow = tmpSession.createQuery(qry)
+                .setParameter("pwd", newPwd)
+                .setParameter("id", id)
+                .executeUpdate();
+        transaction.commit();
+        return updateRow > 0;
+    }
+
 }

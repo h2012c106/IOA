@@ -10,6 +10,14 @@ public class SensorModel {
     private String type;
     private String unit;
 
+    public SensorModel() {
+    }
+
+    public SensorModel(String type, String unit) {
+        this.type = type;
+        this.unit = unit;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")

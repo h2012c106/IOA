@@ -130,7 +130,6 @@ public class AuthorityInterceptor extends HandlerInterceptorAdapter {
 ////            }
 //        }
 
-        System.out.println("拦截器结束");
         return true;
     }
 

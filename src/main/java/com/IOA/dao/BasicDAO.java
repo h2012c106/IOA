@@ -76,7 +76,6 @@ public class BasicDAO<T> {
     }
 
     public List<T> searchBySomeId(Object id, String idName) {
-        System.out.println("A");
         Session tmpSession = this.getTmpSession();
         String qry = "FROM " + this.modelName +
                 " WHERE " + idName + " = (:id)";

@@ -85,7 +85,7 @@ public class GreenhouseService {
         List<Object> userAllGreenhouseId = userAllGreenhouse.stream()
                 .map(UserGreenhouseModel::getGreenhouseId)
                 .collect(Collectors.toList());
-        if (GDAO.isNameDuplicate(userAllGreenhouseId,greenhouse.getName(),greenhouse.getId())) {
+        if (GDAO.isNameDuplicate(userAllGreenhouseId, greenhouse.getName(), greenhouse.getId())) {
             return new NormalMessage(false, MyErrorType.GreenhouseNameDuplicate, null);
         }
 
@@ -212,6 +212,39 @@ public class GreenhouseService {
                 clusterArr.add(tmpMap);
             }
         }
+        message.put("clusterArr", clusterArr);
+
+        return new NormalMessage(true, null, message);
+    }
+
+
+    public NormalMessage getSomeGreenhouseInfo(Integer greenhouseId) {
+        List<GreenhouseModel> greenhouseArr
+                = GDAO.searchBySomeId(greenhouseId, "id");
+        if (greenhouseArr.size() == 0) {
+            return new NormalMessage(false, MyErrorType.GreenhouseAuthorization, null);
+        } else {
+            return new NormalMessage(true, null, greenhouseArr.get(0));
+        }
+    }
+
+    public NormalMessage getSomeGreenhouseClusterList(Integer greenhouseId){
+        List<Map<String, String>> clusterArr = new ArrayList<>();
+        List<GreenhouseClusterModel> clusterArrOfGreenhouse
+                = GCDAO.searchBySomeId(greenhouseId, "greenhouseId");
+        for (GreenhouseClusterModel gc : clusterArrOfGreenhouse) {
+            String tmpClusterId = gc.getClusterId();
+            List<ClusterModel> tmpCluster = CDAO.searchBySomeId(tmpClusterId, "id");
+            if (tmpCluster.size() != 0) {
+                Map<String, String> tmpMap = new HashMap<>();
+                tmpMap.put("clusterId", tmpClusterId);
+                tmpMap.put("name", gc.getName());
+                tmpMap.put("pwd", tmpCluster.get(0).getPwd());
+                tmpMap.put("status", tmpCluster.get(0).getStatus());
+                clusterArr.add(tmpMap);
+            }
+        }
+        Map<String, List<Map<String, String>>> message = new HashMap<>();
         message.put("clusterArr", clusterArr);
 
         return new NormalMessage(true, null, message);

@@ -4,15 +4,21 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
 @Entity
 @DynamicInsert
 @Table(name = "cluster", schema = "ioa", catalog = "")
 public class ClusterModel {
+    @NotNull
     @Length(min = 17, max = 17)
     private String id;
+
+    @NotNull
+    @Length(min = 6, max = 6)
     private String pwd;
+
     private String status;
 
     @Id

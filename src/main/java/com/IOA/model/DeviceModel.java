@@ -13,6 +13,13 @@ public class DeviceModel {
     private String name;
     private String status;
 
+    public DeviceModel() {
+    }
+
+    public DeviceModel(String name) {
+        this.name = name;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
