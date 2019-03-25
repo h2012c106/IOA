@@ -2,11 +2,10 @@ package com.IOA.service;
 
 import com.IOA.dao.*;
 import com.IOA.model.*;
-import com.IOA.util.MD5Manager;
 import com.IOA.util.MyErrorType;
 import com.IOA.util.MyPipe;
 import com.IOA.util.TokenManager;
-import com.IOA.vo.NormalMessage;
+import com.IOA.dto.NormalMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -5,7 +5,7 @@ import com.IOA.model.*;
 import com.IOA.util.MyErrorType;
 import com.IOA.util.MyPipe;
 import com.IOA.util.SensorConfig;
-import com.IOA.vo.NormalMessage;
+import com.IOA.dto.NormalMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -1,11 +1,10 @@
 package com.IOA.controller;
 
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import com.IOA.util.MyErrorType;
-import com.IOA.vo.NormalMessage;
+import com.IOA.dto.NormalMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;

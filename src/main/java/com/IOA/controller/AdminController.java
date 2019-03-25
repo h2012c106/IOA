@@ -5,13 +5,12 @@ import com.IOA.service.ClusterService;
 import com.IOA.service.GreenhouseService;
 import com.IOA.service.UserService;
 import com.IOA.util.MyErrorType;
-import com.IOA.vo.NormalMessage;
+import com.IOA.dto.NormalMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.Map;
 

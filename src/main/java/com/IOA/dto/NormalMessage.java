@@ -1,4 +1,4 @@
-package com.IOA.vo;
+package com.IOA.dto;
 
 public class NormalMessage {
     private boolean success;

@@ -5,8 +5,7 @@ import com.IOA.model.*;
 import com.IOA.util.MyErrorType;
 import com.IOA.util.MyPipe;
 import com.IOA.util.SensorConfig;
-import com.IOA.util.TokenManager;
-import com.IOA.vo.NormalMessage;
+import com.IOA.dto.NormalMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -87,7 +86,7 @@ public class ClusterService {
         // 将缓存内所有结果清除
         Pipe.clearCluster(clusterId);
 
-        // 将所有传感器群解绑并且把没问题的关掉
+        // 将传感器群解绑并且把没问题的关掉
         GCDAO.deleteBySomeId(clusterId, "greenhouseId");
         CDAO.updateStatus(clusterId, "close");
 
@@ -151,7 +150,7 @@ public class ClusterService {
         long startTime = System.currentTimeMillis();
         String hasCache = "有";
 
-        // 试着从缓存中拿出这个传感器的信息以及时间
+        // 试着从缓存中拿出这个传感器的信息
         Map<Integer, Map<String, BigDecimal>> SensorValuesMap = Pipe.getSensor2Server(clusterId);
         // 若缓存中没有这个传感器群的信息，那么去数据库中找
         if (SensorValuesMap == null) {
@@ -368,10 +367,10 @@ public class ClusterService {
                 .map(ClusterDeviceModel::getDeviceId)
                 .collect(Collectors.toList());
 
-        SDAO.deleteBySomeId(sensorIdOfClusterArr, "id");
-        DDAO.deleteBySomeId(deviceIdOfClusterArr, "id");
         CSDAO.deleteBySomeId(clusterId, "clusterId");
         CDDAO.deleteBySomeId(clusterId, "clusterId");
+        SDAO.deleteBySomeId(sensorIdOfClusterArr, "id");
+        DDAO.deleteBySomeId(deviceIdOfClusterArr, "id");
         CDAO.deleteBySomeId(clusterId, "id");
 
         return new NormalMessage(true, null, null);

@@ -6,11 +6,10 @@ import com.IOA.util.MD5Manager;
 import com.IOA.util.MyErrorType;
 import com.IOA.util.MyPipe;
 import com.IOA.util.TokenManager;
-import com.IOA.vo.NormalMessage;
+import com.IOA.dto.NormalMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -157,21 +156,12 @@ public class UserService {
         List<Object> userAllGreenhouseId = userAllGreenhouse.stream()
                 .map(UserGreenhouseModel::getGreenhouseId)
                 .collect(Collectors.toList());
-        List<GreenhouseModel> sameNameGreenhouseArr =
-                GDAO.searchBySomeId(userAllGreenhouseId, "id");
-        boolean canUseThisName = true;
-        for (GreenhouseModel tmpGreenhouse : sameNameGreenhouseArr) {
-            if (tmpGreenhouse.getName().equals(greenhouse.getName())) {
-                canUseThisName = false;
-                break;
-            }
-        }
-        if (!canUseThisName) {
+        if (GDAO.isNameDuplicate(userAllGreenhouseId, greenhouse.getName())) {
             return new NormalMessage(false, MyErrorType.GreenhouseNameDuplicate, null);
         }
 
-        GDAO.save(greenhouse);
-        UGDAO.save(new UserGreenhouseModel(id, greenhouse.getId()));
+        Integer newId = GDAO.saveBackId(greenhouse);
+        UGDAO.save(new UserGreenhouseModel(id, newId));
 
         return new NormalMessage(true, null, null);
     }
@@ -223,7 +213,7 @@ public class UserService {
                 : new NormalMessage(false, MyErrorType.UpdateError, null);
     }
 
-    public NormalMessage deleteSomeone(Integer id){
+    public NormalMessage deleteSomeone(Integer id) {
         // 找到此人名下的所有大棚
         List<UserGreenhouseModel> abandonedGreenhouseArr
                 = UGDAO.searchBySomeId(id, "userId");
