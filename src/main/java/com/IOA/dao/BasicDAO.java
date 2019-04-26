@@ -1,6 +1,5 @@
 package com.IOA.dao;
 
-import com.IOA.model.ThresholdModel;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.ParameterizedType;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -41,7 +39,6 @@ public class BasicDAO<T> {
         return id;
     }
 
-
     public void save(T model) {
         Session tmpSession = this.getTmpSession();
         Transaction transaction = tmpSession.beginTransaction();
@@ -49,14 +46,6 @@ public class BasicDAO<T> {
         tmpSession.flush();
         transaction.commit();
     }
-
-//    public void update(T model) {
-//        Session tmpSession = this.getTmpSession();
-//        Transaction transaction = tmpSession.beginTransaction();
-//        tmpSession.update(model);
-//        tmpSession.flush();
-//        transaction.commit();
-//    }
 
     public List<T> searchAll() {
         Session tmpSession = this.getTmpSession();
@@ -164,35 +153,6 @@ public class BasicDAO<T> {
                 .list();
     }
 
-
-//    public List<Object[]> searchBySomeId(Object id, String idName, String select) {
-//        Session tmpSession = this.getTmpSession();
-//        String qry = "SELECT " + select +
-//                " FROM " + this.modelName +
-//                " WHERE " + idName + " = (:id)";
-//        return tmpSession.createQuery(qry)
-//                .setParameter("id", id)
-//                .list();
-//    }
-//
-//
-//    public List<Object[]> searchBySomeId(List<Object> idArr, String idName, String select) {
-//        List<Object[]> res;
-//        if (idArr != null && idArr.size() != 0) {
-//            Session tmpSession = this.getTmpSession();
-//            String qry = "SELECT " + select +
-//                    " FROM " + this.modelName +
-//                    " WHERE " + idName + " IN (:idArr)";
-//            res = tmpSession.createQuery(qry)
-//                    .setParameterList("idArr", idArr)
-//                    .list();
-//        } else {
-//            res = Collections.EMPTY_LIST;
-//        }
-//        return res;
-//    }
-
-
     public boolean isNameDuplicate(String name) {
         List<T> res;
         Session tmpSession = this.getTmpSession();
@@ -203,7 +163,6 @@ public class BasicDAO<T> {
                 .list();
         return res.size() > 0;
     }
-
 
     public boolean isNameDuplicate(String name, Object id) {
         List<T> res;
@@ -216,7 +175,6 @@ public class BasicDAO<T> {
                 .list();
         return res.size() > 0;
     }
-
 
     public boolean isNameDuplicate(List<Object> idArr, String name) {
         if (idArr != null && idArr.size() != 0) {
@@ -233,7 +191,6 @@ public class BasicDAO<T> {
             return false;
         }
     }
-
 
     public boolean isNameDuplicate(List<Object> idArr, String name, Object id) {
         if (idArr != null && idArr.size() != 0) {

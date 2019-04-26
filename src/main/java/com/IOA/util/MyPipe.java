@@ -15,7 +15,6 @@ public class MyPipe {
 
     // 第一层clusterId，第二层sensorId，第三层value+minimum+maximum
     private ConcurrentMap<String, Map<Integer, Map<String, BigDecimal>>> Sensor2Server;
-//    private ConcurrentMap<String, Map<Integer, String>> Device2Server;
     private ConcurrentMap<String, Timestamp> RefreshTime;
 
     public MyPipe() {
@@ -33,14 +32,6 @@ public class MyPipe {
         this.Sensor2Server.put(clusterId, sensorMap);
     }
 
-//    public Map<Integer, String> getDevice2Server(String clusterId) {
-//        return this.Device2Server.get(clusterId);
-//    }
-//
-//    public void setDevice2Server(String clusterId, Map<Integer, String> deviceMap) {
-//        this.Device2Server.put(clusterId, deviceMap);
-//    }
-
     public void clearCluster(String clusterId) {
         this.Sensor2Server.remove(clusterId);
 //        this.Device2Server.remove(clusterId);
@@ -55,7 +46,6 @@ public class MyPipe {
             this.RefreshTime.remove(clusterId);
         }
     }
-
 
     public Timestamp getRefreshTime(String clusterId) {
         return this.RefreshTime.get(clusterId);

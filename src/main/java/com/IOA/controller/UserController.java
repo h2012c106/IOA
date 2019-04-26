@@ -164,7 +164,7 @@ public class UserController {
     public NormalMessage ClusterOrder(@RequestBody Map<String, Object> requestMap) {
         Integer deviceId = (Integer) requestMap.get("id");
         String status = (String) requestMap.get("status");
-        return TSvc.sendOrder(deviceId, status);
+        return TSvc.send(deviceId, status);
     }
 
     @RequestMapping(value = "/Sensor-Management/Register-Threshold", method = RequestMethod.POST)

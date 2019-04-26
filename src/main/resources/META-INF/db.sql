@@ -24,14 +24,14 @@ CREATE TABLE `greenhouse` (
 DROP TABLE IF EXISTS `cluster`;
 CREATE TABLE `cluster` (
 												 `id` char(17) NOT NULL,
-												 `pwd` varchar(4) NOT NULL,
+												 `pwd` char(4) NOT NULL,
 												 `status` enum('error','on','close') DEFAULT 'on',
 												 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 DROP TABLE IF EXISTS `sensor`;
 CREATE TABLE `sensor` (
-												`id` int NOT NULL,
+												`id` int NOT NULL AUTO_INCREMENT,
 												`type` varchar(16) NOT NULL, -- 传感器类型，如温度传感器等
 												`unit` varchar(8) NOT NULL, -- 计量单位，如℃等
 												PRIMARY KEY (`id`)

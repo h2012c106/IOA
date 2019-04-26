@@ -65,7 +65,7 @@ public class TransmissionService {
         new Thread(listnerService).start();
     }
 
-    public NormalMessage sendOrder(Integer deviceId, String status) {
+    public NormalMessage send(Integer deviceId, String status) {
         List<ClusterDeviceModel> deviceOfClusterArr = CDDAO.searchBySomeId(deviceId, "id");
         if (deviceOfClusterArr.size() == 0) {
             return new NormalMessage(false, MyErrorType.DeviceUnexist, null);
@@ -116,7 +116,7 @@ public class TransmissionService {
         boolean send(String clusterId, String order) {
             boolean res = false;
             for (Handler tmpHandler : this.handlerArr) {
-                res = tmpHandler.send(clusterId, order);
+                res = tmpHandler.sendOrder(clusterId, order);
                 if (res)
                     break;
             }
@@ -325,7 +325,7 @@ public class TransmissionService {
             }
         }
 
-        boolean send(String clusterId, String order) {
+        boolean sendOrder(String clusterId, String order) {
             boolean res = true;
             if (idSet.contains(clusterId)) {
                 try {

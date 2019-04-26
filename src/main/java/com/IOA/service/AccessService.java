@@ -43,7 +43,7 @@ public class AccessService {
         if (MD5Manager.verify(user.getPwd(), tmpUserArr.get(0).getPwd())) {
             Map<String, String> message = new HashMap<>();
             message.put("token", TokenManager.generateToken(tmpUserArr.get(0)));
-            message.put("userType",tmpUserArr.get(0).getUserType());
+            message.put("userType", tmpUserArr.get(0).getUserType());
             return new NormalMessage(true, null, message);
         } else {
             return new NormalMessage(false, MyErrorType.UserPasswordWrong, null);
