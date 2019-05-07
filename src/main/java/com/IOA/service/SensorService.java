@@ -2,6 +2,7 @@ package com.IOA.service;
 
 import com.IOA.dao.*;
 import com.IOA.model.*;
+import com.IOA.util.FileWritter;
 import com.IOA.util.MyErrorType;
 import com.IOA.util.MyPipe;
 import com.IOA.dto.NormalMessage;
@@ -126,7 +127,7 @@ public class SensorService {
         }
 
         // 停止计时
-        System.out.println(hasCache + "缓存时取出单个传感器数据串花了: " + (System.currentTimeMillis() - startTime) + "ms");
+        FileWritter.print("Read_Sensor",hasCache + "缓存时取出单个传感器数据串花了: " + (System.currentTimeMillis() - startTime) + "ms");
 
         Map<String, Object> message = new HashMap<>();
         message.put("value", value);

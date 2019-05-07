@@ -16,6 +16,7 @@ public class MyPipe {
     // 第一层clusterId，第二层sensorId，第三层value+minimum+maximum
     private ConcurrentMap<String, Map<Integer, Map<String, BigDecimal>>> Sensor2Server;
     private ConcurrentMap<String, Timestamp> RefreshTime;
+    private Boolean On = true;
 
     public MyPipe() {
         this.Sensor2Server = new ConcurrentHashMap<>();
@@ -25,11 +26,12 @@ public class MyPipe {
 
     public Map<Integer, Map<String, BigDecimal>> getSensor2Server(String clusterId) {
 
-        return this.Sensor2Server.get(clusterId);
+        return this.On ? this.Sensor2Server.get(clusterId) : null;
     }
 
     public void setSensor2Server(String clusterId, Map<Integer, Map<String, BigDecimal>> sensorMap) {
-        this.Sensor2Server.put(clusterId, sensorMap);
+        if (this.On)
+            this.Sensor2Server.put(clusterId, sensorMap);
     }
 
     public void clearCluster(String clusterId) {
@@ -48,10 +50,11 @@ public class MyPipe {
     }
 
     public Timestamp getRefreshTime(String clusterId) {
-        return this.RefreshTime.get(clusterId);
+        return this.On ? this.RefreshTime.get(clusterId) : null;
     }
 
     public void setRefreshTime(String clusterId, Timestamp time) {
-        this.RefreshTime.put(clusterId, time);
+        if (this.On)
+            this.RefreshTime.put(clusterId, time);
     }
 }

@@ -16,7 +16,7 @@ public class ClusterModel {
     private String id;
 
     @NotNull
-    @Length(min = 6, max = 6)
+    @Length(min = 4, max = 4)
     private String pwd;
 
     private String status;

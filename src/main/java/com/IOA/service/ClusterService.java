@@ -2,6 +2,7 @@ package com.IOA.service;
 
 import com.IOA.dao.*;
 import com.IOA.model.*;
+import com.IOA.util.FileWritter;
 import com.IOA.util.MyErrorType;
 import com.IOA.util.MyPipe;
 import com.IOA.util.SensorConfig;
@@ -206,7 +207,7 @@ public class ClusterService {
         }
 
         // 停止计时
-        System.out.println(hasCache + "缓存时取出传感器群传感器数据串花了: " + (System.currentTimeMillis() - startTime) + "ms");
+        FileWritter.print("Read_Cluster", hasCache + "缓存时取出传感器群传感器数据串花了: " + (System.currentTimeMillis() - startTime) + "ms");
 
         List<Map<String, Object>> deviceArr = new ArrayList<>();
 
@@ -256,7 +257,7 @@ public class ClusterService {
         String id = cluster.getId();
 
         // 如果此id已经有了
-        if (CDAO.isNameDuplicate(id)) {
+        if (CDAO.isIdDuplicate(id)) {
             return new NormalMessage(false, MyErrorType.ClusterBeenRegistered, null);
         }
 

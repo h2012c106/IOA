@@ -153,6 +153,17 @@ public class BasicDAO<T> {
                 .list();
     }
 
+    public boolean isIdDuplicate(String id) {
+        List<T> res;
+        Session tmpSession = this.getTmpSession();
+        String qry = "FROM " + this.modelName +
+                " WHERE id = (:id)";
+        res = tmpSession.createQuery(qry)
+                .setParameter("id", id)
+                .list();
+        return res.size() > 0;
+    }
+
     public boolean isNameDuplicate(String name) {
         List<T> res;
         Session tmpSession = this.getTmpSession();

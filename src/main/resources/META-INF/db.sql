@@ -42,8 +42,8 @@ DROP TABLE IF EXISTS `threshold`;
 CREATE TABLE `threshold` (
 													 `id` int NOT NULL AUTO_INCREMENT,
 													 `name` varchar(32) NOT NULL,
-													 `minimum` decimal(8,3) NOT NULL,
-													 `maximum` decimal(8,3) NOT NULL,
+													 `minimum` decimal(32,16) NOT NULL,
+													 `maximum` decimal(32,16) NOT NULL,
 													 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -51,10 +51,10 @@ CREATE TABLE `threshold` (
 DROP TABLE IF EXISTS `result`;
 CREATE TABLE `result` (
 												`id` int NOT NULL AUTO_INCREMENT,
-												`value` decimal(8,3) NOT NULL,
+												`value` decimal(32,16) NOT NULL,
 												`time` datetime NOT NULL,
-												`minimum` decimal(8,3), -- 记录当时的阈值
-												`maximum` decimal(8,3),
+												`minimum` decimal(32,16), -- 记录当时的阈值
+												`maximum` decimal(32,16),
 												PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

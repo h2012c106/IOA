@@ -5,9 +5,14 @@ import com.IOA.model.*;
 import com.IOA.util.MyErrorType;
 import com.IOA.util.MyPipe;
 import com.IOA.util.SensorConfig;
+import com.IOA.util.FileWritter;
 import com.IOA.dto.NormalMessage;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import java.io.*;
 import java.math.BigDecimal;
@@ -57,6 +62,9 @@ public class TransmissionService {
 
     @Autowired
     MyPipe Pipe;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     private ListnerService listnerService;
 
@@ -143,8 +151,7 @@ public class TransmissionService {
             return new BufferedReader(new InputStreamReader(socketIn));
         }
 
-        @Override
-        public void run() {
+        private void doSomething() {
             BufferedReader in = null;
             try {
                 in = this.getReader(this.socket);
@@ -202,7 +209,7 @@ public class TransmissionService {
                         this.fulfillDB(singleGC.get(0).getGreenhouseId(),
                                 sensorMap, deviceMap, sensorOfClusterArr, currentTime);
 
-                        System.out.println("处理TCP信息并保存花了: " + (System.currentTimeMillis() - currentTime.getTime()) + "ms");
+                        FileWritter.print("Save","处理TCP信息并保存花了: " + (System.currentTimeMillis() - currentTime.getTime()));
                     }
 
                     //////////// 收到传感器群信息后的逻辑 ////////////
@@ -221,6 +228,21 @@ public class TransmissionService {
                         in.close();
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+            }
+        }
+
+        @Override
+        public void run() {
+            // 为当前线程绑定一个session对象,让dao中使用 getCurrentSession的方法可以获取到对应的session
+            Session session = sessionFactory.openSession();
+            TransactionSynchronizationManager.bindResource(sessionFactory, session);
+            try {
+                this.doSomething();
+            } finally {
+                TransactionSynchronizationManager.unbindResourceIfPossible(sessionFactory);
+                if (session != null) {
+                    session.close();
                 }
             }
         }
