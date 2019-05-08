@@ -17,8 +17,8 @@ public class ResultDAO extends BasicDAO<ResultModel> {
     public ResultModel searchLatestResult(Integer sensorId, Integer greenhouseId) {
         Session tmpSession = this.getTmpSession();
         String qry = "SELECT r.time, r.value, r.minimum, r.maximum " +
-                "FROM ResultModel r INNER JOIN GreenhouseResultModel gr ON r.id = gr.resultId INNER JOIN SensorResultModel sr ON r.id = sr.resultId " +
-                "WHERE gr.greenhouseId = (:greenhouseId) AND sr.sensorId = (:sensorId)  " +
+                "FROM ResultModel r, GreenhouseResultModel gr, SensorResultModel " +
+                "WHERE r.id = gr.resultId AND r.id = sr.resultId AND gr.greenhouseId = (:greenhouseId) AND sr.sensorId = (:sensorId)  " +
                 "ORDER BY r.time DESC";
         List<Object[]> res = tmpSession.createQuery(qry)
                 .setParameter("sensorId", sensorId)
@@ -39,8 +39,8 @@ public class ResultDAO extends BasicDAO<ResultModel> {
     public List<ResultModel> searchHistoryResult(Integer sensorId, Integer greenhouseId) {
         Session tmpSession = this.getTmpSession();
         String qry = "SELECT r.time, r.value, r.minimum, r.maximum " +
-                "FROM ResultModel r INNER JOIN GreenhouseResultModel gr ON r.id = gr.resultId INNER JOIN SensorResultModel sr ON r.id = sr.resultId " +
-                "WHERE gr.greenhouseId = (:greenhouseId) AND sr.sensorId = (:sensorId)  " +
+                "FROM ResultModel r, GreenhouseResultModel gr, SensorResultModel sr " +
+                "WHERE r.id = gr.resultId AND r.id = sr.resultId AND gr.greenhouseId = (:greenhouseId) AND sr.sensorId = (:sensorId)  " +
                 "ORDER BY r.time DESC";
         List<Object[]> tmpRes = tmpSession.createQuery(qry)
                 .setParameter("sensorId", sensorId)

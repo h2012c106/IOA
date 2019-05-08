@@ -32,31 +32,6 @@ public class UserController {
     @Autowired
     private SensorService SSvc;
 
-    @RequestMapping(value = "/User-Management/Logoff", method = RequestMethod.POST)
-    @ResponseBody
-    public NormalMessage logoff(@RequestHeader("Authorization") String token) {
-        return USvc.logoff(token);
-    }
-
-
-    @RequestMapping(value = "/User-Management/Info", method = RequestMethod.POST)
-    @ResponseBody
-    public NormalMessage getSelfInfo(@RequestHeader("Authorization") String token) {
-        return USvc.getSelfInfo(token);
-    }
-
-
-    @RequestMapping(value = "/User-Management/Alter", method = RequestMethod.POST)
-    @ResponseBody
-    public NormalMessage alterSelfInfo(@RequestHeader("Authorization") String token,
-                                       @RequestBody Map<String, Object> requestMap) {
-        String name = (String) requestMap.get("name");
-        String oldPwd = (String) requestMap.get("oldPwd");
-        String newPwd = (String) requestMap.get("newPwd");
-
-        return USvc.alterSelfInfo(token, name, oldPwd, newPwd);
-    }
-
     @RequestMapping(value = "/User-Management/Register-Greenhouse", method = RequestMethod.POST)
     @ResponseBody
     public NormalMessage greenhouseRegister(@RequestHeader("Authorization") String token,

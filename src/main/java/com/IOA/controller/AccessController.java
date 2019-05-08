@@ -3,18 +3,18 @@ package com.IOA.controller;
 
 import javax.validation.Valid;
 
+import com.IOA.service.UserService;
 import com.IOA.util.MyErrorType;
 import com.IOA.dto.NormalMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.Errors;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import com.IOA.service.AccessService;
 import com.IOA.model.UserModel;
+
+import java.util.Map;
 
 @RequestMapping("/Access")
 @Controller
@@ -22,6 +22,9 @@ public class AccessController {
 
     @Autowired
     private AccessService ASvc;
+
+    @Autowired
+    private UserService USvc;
 
     @RequestMapping(value = "/Register", method = RequestMethod.POST)
     @ResponseBody
@@ -41,6 +44,31 @@ public class AccessController {
         } else {
             return ASvc.login(user);
         }
+    }
+
+    @RequestMapping(value = "/User-Management/Logoff", method = RequestMethod.POST)
+    @ResponseBody
+    public NormalMessage logoff(@RequestHeader("Authorization") String token) {
+        return USvc.logoff(token);
+    }
+
+
+    @RequestMapping(value = "/User-Management/Info", method = RequestMethod.POST)
+    @ResponseBody
+    public NormalMessage getSelfInfo(@RequestHeader("Authorization") String token) {
+        return USvc.getSelfInfo(token);
+    }
+
+
+    @RequestMapping(value = "/User-Management/Alter", method = RequestMethod.POST)
+    @ResponseBody
+    public NormalMessage alterSelfInfo(@RequestHeader("Authorization") String token,
+                                       @RequestBody Map<String, Object> requestMap) {
+        String name = (String) requestMap.get("name");
+        String oldPwd = (String) requestMap.get("oldPwd");
+        String newPwd = (String) requestMap.get("newPwd");
+
+        return USvc.alterSelfInfo(token, name, oldPwd, newPwd);
     }
 
 //    @RequestMapping(value = "/register", method = RequestMethod.POST)

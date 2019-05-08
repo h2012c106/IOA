@@ -22,7 +22,7 @@ public class LoggerInterceptor extends HandlerInterceptorAdapter {
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         String requestURI = request.getRequestURI();
         String method = request.getMethod();
-        int status = response.getStatus();
+        int status = ex == null ? response.getStatus() : 500;
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String beginTimeStr = dateFormat.format(request.getAttribute("beginTime"));
         long interval = System.currentTimeMillis() - (Long) request.getAttribute("beginTime");

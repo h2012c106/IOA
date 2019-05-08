@@ -947,7 +947,7 @@
     </column>
     <column id="249" parent="233" name="pwd">
       <Position>2</Position>
-      <DataType>varchar(4)|0s</DataType>
+      <DataType>char(4)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
@@ -1125,7 +1125,7 @@ result_id</ColNames>
     </column>
     <column id="279" parent="240" name="value">
       <Position>2</Position>
-      <DataType>decimal(8,3 digit)|0s</DataType>
+      <DataType>decimal(32,16 digit)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
@@ -1137,12 +1137,12 @@ result_id</ColNames>
     </column>
     <column id="281" parent="240" name="minimum">
       <Position>4</Position>
-      <DataType>decimal(8,3 digit)|0s</DataType>
+      <DataType>decimal(32,16 digit)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="282" parent="240" name="maximum">
       <Position>5</Position>
-      <DataType>decimal(8,3 digit)|0s</DataType>
+      <DataType>decimal(32,16 digit)|0s</DataType>
       <ColumnKind>normal</ColumnKind>
     </column>
     <key id="283" parent="240" name="PRIMARY">
@@ -1172,6 +1172,7 @@ threshold_id</ColNames>
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
+      <SequenceIdentity>1</SequenceIdentity>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="288" parent="242" name="type">
@@ -1242,13 +1243,13 @@ threshold_id</ColNames>
     </column>
     <column id="299" parent="245" name="minimum">
       <Position>3</Position>
-      <DataType>decimal(8,3 digit)|0s</DataType>
+      <DataType>decimal(32,16 digit)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>
     <column id="300" parent="245" name="maximum">
       <Position>4</Position>
-      <DataType>decimal(8,3 digit)|0s</DataType>
+      <DataType>decimal(32,16 digit)|0s</DataType>
       <NotNull>1</NotNull>
       <ColumnKind>normal</ColumnKind>
     </column>

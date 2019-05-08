@@ -44,11 +44,6 @@
     </mvc:annotation-driven>
 
     <mvc:interceptors>
-        <!--<mvc:interceptor>-->
-        <!--<mvc:mapping path="/**"/>-->
-        <!--&lt;!&ndash;跨域请求拦截器&ndash;&gt;-->
-        <!--<bean id="crossDomainInterceptor" class="com.IOA.interceptor.CrossDomainInterceptor"/>-->
-        <!--</mvc:interceptor>-->
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <!--日志拦截器-->
