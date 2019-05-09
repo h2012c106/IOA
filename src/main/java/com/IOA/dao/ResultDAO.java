@@ -17,7 +17,7 @@ public class ResultDAO extends BasicDAO<ResultModel> {
     public ResultModel searchLatestResult(Integer sensorId, Integer greenhouseId) {
         Session tmpSession = this.getTmpSession();
         String qry = "SELECT r.time, r.value, r.minimum, r.maximum " +
-                "FROM ResultModel r, GreenhouseResultModel gr, SensorResultModel " +
+                "FROM ResultModel r, GreenhouseResultModel gr, SensorResultModel sr " +
                 "WHERE r.id = gr.resultId AND r.id = sr.resultId AND gr.greenhouseId = (:greenhouseId) AND sr.sensorId = (:sensorId)  " +
                 "ORDER BY r.time DESC";
         List<Object[]> res = tmpSession.createQuery(qry)

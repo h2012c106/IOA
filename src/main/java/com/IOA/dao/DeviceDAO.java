@@ -27,14 +27,16 @@ public class DeviceDAO extends BasicDAO<DeviceModel> {
     }
 
     public void closeAll(List<Object> deviceIdArr) {
-        Session tmpSession = this.getTmpSession();
-        Transaction transaction = tmpSession.beginTransaction();
-        String qry = "UPDATE DeviceModel " +
-                "SET status = 'close' " +
-                "WHERE id IN (:id) AND status = 'on'";
-        tmpSession.createQuery(qry)
-                .setParameterList("id", deviceIdArr)
-                .executeUpdate();
-        transaction.commit();
+        if (deviceIdArr != null && deviceIdArr.size() != 0) {
+            Session tmpSession = this.getTmpSession();
+            Transaction transaction = tmpSession.beginTransaction();
+            String qry = "UPDATE DeviceModel " +
+                    "SET status = '0' " +
+                    "WHERE id IN (:id) AND status <> '0'";
+            tmpSession.createQuery(qry)
+                    .setParameterList("id", deviceIdArr)
+                    .executeUpdate();
+            transaction.commit();
+        }
     }
 }

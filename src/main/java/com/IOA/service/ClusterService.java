@@ -88,7 +88,7 @@ public class ClusterService {
         Pipe.clearCluster(clusterId);
 
         // 将传感器群解绑并且把没问题的关掉
-        GCDAO.deleteBySomeId(clusterId, "greenhouseId");
+        GCDAO.deleteBySomeId(clusterId, "clusterId");
         CDAO.updateStatus(clusterId, "close");
 
         return new NormalMessage(true, null, null);
@@ -179,6 +179,7 @@ public class ClusterService {
 
                     SensorValuesMap.put(sensorId, tmpMap);
                     Timestamp tmpTime = result.getTime();
+                    resultTime = resultTime == null ? tmpTime : resultTime;
                     resultTime = resultTime.before(tmpTime) ? tmpTime : resultTime;
                 }
             }
@@ -193,9 +194,12 @@ public class ClusterService {
             String type = tmpSensor.getType();
             String unit = tmpSensor.getUnit();
 
-            BigDecimal value = SensorValuesMap.get(id).get("value");
-            BigDecimal minimum = SensorValuesMap.get(id).get("minimum");
-            BigDecimal maximum = SensorValuesMap.get(id).get("maximum");
+            BigDecimal value = SensorValuesMap.get(id) == null
+                    ? null : SensorValuesMap.get(id).get("value");
+            BigDecimal minimum = SensorValuesMap.get(id) == null
+                    ? null : SensorValuesMap.get(id).get("minimum");
+            BigDecimal maximum = SensorValuesMap.get(id) == null
+                    ? null : SensorValuesMap.get(id).get("maximum");
 
             tmpMap.put("id", id);
             tmpMap.put("type", type);

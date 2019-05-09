@@ -138,6 +138,9 @@ public class GreenhouseService {
         List<Object> abandonedThresholdIdArr = abandonedThresholdArr.stream()
                 .map(SensorThresholdModel::getThresholdId)
                 .collect(Collectors.toList());
+        System.out.println(abandonedClusterArr);
+        System.out.println(abandonedDeviceIdArr);
+        System.out.println(abandonedSensorArr);
 
         // 删除传感器对应的阈值对以及其目前选择的阈值
         SeDAO.deleteBySomeId(abandonedSensorIdArr, "sensorId");

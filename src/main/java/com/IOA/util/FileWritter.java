@@ -8,7 +8,7 @@ import java.io.OutputStreamWriter;
 public class FileWritter {
 
     public static void print(String name, String msg) {
-        System.out.println(msg);
+//        System.out.println(msg);
 
         String logDir = "E:\\代码\\毕设\\性能\\";
         String file = logDir + name + ".txt";

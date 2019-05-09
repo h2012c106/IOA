@@ -74,7 +74,7 @@ public class TransmissionService {
     }
 
     public NormalMessage send(Integer deviceId, String status) {
-        List<ClusterDeviceModel> deviceOfClusterArr = CDDAO.searchBySomeId(deviceId, "id");
+        List<ClusterDeviceModel> deviceOfClusterArr = CDDAO.searchBySomeId(deviceId, "deviceId");
         if (deviceOfClusterArr.size() == 0) {
             return new NormalMessage(false, MyErrorType.DeviceUnexist, null);
         }
@@ -159,7 +159,7 @@ public class TransmissionService {
                 while ((msg = in.readLine()) != null) {
 
                     //////////// 收到传感器群信息后的逻辑 ////////////
-                    System.out.println("收到: " + msg);
+//                    System.out.println("收到: " + msg);
 
                     // 拿个时间戳
                     Timestamp currentTime = new Timestamp(System.currentTimeMillis());
@@ -209,7 +209,8 @@ public class TransmissionService {
                         this.fulfillDB(singleGC.get(0).getGreenhouseId(),
                                 sensorMap, deviceMap, sensorOfClusterArr, currentTime);
 
-                        FileWritter.print("Save","处理TCP信息并保存花了: " + (System.currentTimeMillis() - currentTime.getTime()));
+                        String hasCache = Pipe.On ? "有" : "无";
+                        FileWritter.print("Save", hasCache + "缓存处理TCP信息并保存花了: " + (System.currentTimeMillis() - currentTime.getTime()) + "ms");
                     }
 
                     //////////// 收到传感器群信息后的逻辑 ////////////
