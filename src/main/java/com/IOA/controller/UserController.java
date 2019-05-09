@@ -88,7 +88,8 @@ public class UserController {
         Integer greenhouseId = (Integer) requestMap.get("greenhouseId");
         String pwd = (String) requestMap.get("pwd");
         String name = (String) requestMap.get("name");
-        return GSvc.bindCluster(token, clusterId, greenhouseId, pwd, name);
+        String location = (String) requestMap.get("location");
+        return GSvc.bindCluster(token, clusterId, greenhouseId, pwd, name, location);
     }
 
     @RequestMapping(value = "/Greenhouse-Management/Cluster-List", method = RequestMethod.POST)
@@ -123,7 +124,8 @@ public class UserController {
         String clusterId = (String) requestMap.get("clusterId");
         String name = (String) requestMap.get("name");
         String status = (String) requestMap.get("status");
-        return CSvc.alterInfo(token, clusterId, name, status);
+        String location = (String) requestMap.get("location");
+        return CSvc.alterInfo(token, clusterId, name, status, location);
     }
 
     @RequestMapping(value = "/Cluster-Management/Status", method = RequestMethod.POST)

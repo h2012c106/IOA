@@ -7,14 +7,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class GreenhouseClusterDAO extends BasicDAO<GreenhouseClusterModel> {
-    public void updateName(String clusterId, String newName) {
+    public void updateNameAndLoc(String clusterId, String newName, String location) {
         Session tmpSession = this.getTmpSession();
         Transaction transaction = tmpSession.beginTransaction();
         String qry = "UPDATE GreenhouseClusterModel " +
-                "SET name = (:name) " +
+                "SET name = (:name), location = (:location)" +
                 "WHERE clusterId = (:clusterId)";
         tmpSession.createQuery(qry)
                 .setParameter("name", newName)
+                .setParameter("location", location)
                 .setParameter("clusterId", clusterId)
                 .executeUpdate();
         transaction.commit();

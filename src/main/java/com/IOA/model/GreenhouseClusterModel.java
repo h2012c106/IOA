@@ -10,14 +10,16 @@ public class GreenhouseClusterModel {
     private String clusterId;
     private int greenhouseId;
     private String name;
+    private String location;
 
     public GreenhouseClusterModel() {
     }
 
-    public GreenhouseClusterModel(String clusterId, int greenhouseId, String name) {
+    public GreenhouseClusterModel(String clusterId, int greenhouseId, String name, String location) {
         this.clusterId = clusterId;
         this.greenhouseId = greenhouseId;
         this.name = name;
+        this.location = location;
     }
 
     @Id
@@ -48,6 +50,16 @@ public class GreenhouseClusterModel {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Basic
+    @Column(name = "location")
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     @Override

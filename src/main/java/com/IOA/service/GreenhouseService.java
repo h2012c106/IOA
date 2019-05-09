@@ -54,6 +54,9 @@ public class GreenhouseService {
     @Autowired
     MyPipe Pipe;
 
+    @Autowired
+    ClusterService CSvc;
+
     public NormalMessage getInfo(String token, Integer greenhouseId) {
         Map<String, Object> userInfo = TokenManager.parseToken(token);
         Integer id = (Integer) userInfo.get("id");
@@ -165,7 +168,7 @@ public class GreenhouseService {
     }
 
     public NormalMessage bindCluster(String token, String clusterId, Integer greenhouseId,
-                                     String pwd, String name) {
+                                     String pwd, String name, String location) {
         Map<String, Object> userInfo = TokenManager.parseToken(token);
         Integer id = (Integer) userInfo.get("id");
 
@@ -185,7 +188,7 @@ public class GreenhouseService {
             return new NormalMessage(false, MyErrorType.ClusterNameDuplicate, null);
         }
 
-        GCDAO.save(new GreenhouseClusterModel(clusterId, greenhouseId, name));
+        GCDAO.save(new GreenhouseClusterModel(clusterId, greenhouseId, name, location));
 
         return new NormalMessage(true, null, null);
     }
@@ -198,19 +201,21 @@ public class GreenhouseService {
             return new NormalMessage(false, MyErrorType.GreenhouseAuthorization, null);
         }
 
-        Map<String, List<Map<String, String>>> message = new HashMap<>();
-        List<Map<String, String>> clusterArr = new ArrayList<>();
+        Map<String, List<Map<String, Object>>> message = new HashMap<>();
+        List<Map<String, Object>> clusterArr = new ArrayList<>();
         List<GreenhouseClusterModel> clusterArrOfGreenhouse
                 = GCDAO.searchBySomeId(greenhouseId, "greenhouseId");
         for (GreenhouseClusterModel gc : clusterArrOfGreenhouse) {
             String tmpClusterId = gc.getClusterId();
             List<ClusterModel> tmpCluster = CDAO.searchBySomeId(tmpClusterId, "id");
             if (tmpCluster.size() != 0) {
-                Map<String, String> tmpMap = new HashMap<>();
+                Map<String, Object> tmpMap = new HashMap<>();
                 tmpMap.put("clusterId", tmpClusterId);
                 tmpMap.put("name", gc.getName());
                 tmpMap.put("pwd", tmpCluster.get(0).getPwd());
                 tmpMap.put("status", tmpCluster.get(0).getStatus());
+                tmpMap.put("location", gc.getLocation());
+                tmpMap.put("resultArr", CSvc.getStatus("", tmpClusterId).getMessage());
                 clusterArr.add(tmpMap);
             }
         }
@@ -230,7 +235,7 @@ public class GreenhouseService {
         }
     }
 
-    public NormalMessage getSomeGreenhouseClusterList(Integer greenhouseId){
+    public NormalMessage getSomeGreenhouseClusterList(Integer greenhouseId) {
         List<Map<String, String>> clusterArr = new ArrayList<>();
         List<GreenhouseClusterModel> clusterArrOfGreenhouse
                 = GCDAO.searchBySomeId(greenhouseId, "greenhouseId");

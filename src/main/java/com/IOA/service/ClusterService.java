@@ -105,13 +105,14 @@ public class ClusterService {
             Map<String, String> message = new HashMap<>();
             message.put("clusterId", clusterId);
             message.put("name", justForName.get(0).getName());
+            message.put("location", justForName.get(0).getLocation());
             message.put("status", singleCluster.get(0).getStatus());
             return new NormalMessage(true, null, message);
         }
     }
 
     public NormalMessage alterInfo(String token, String clusterId,
-                                   String newName, String newStatus) {
+                                   String newName, String newStatus, String location) {
 
         // 拿到这个传感器群所属的大棚，然后搜索大棚内是否会出现重名情况
         List<GreenhouseClusterModel> singleCluster
@@ -128,7 +129,7 @@ public class ClusterService {
             return new NormalMessage(false, MyErrorType.ClusterNameDuplicate, null);
         }
 
-        GCDAO.updateName(clusterId, newName);
+        GCDAO.updateNameAndLoc(clusterId, newName, location);
         return CDAO.updateStatus(clusterId, newStatus)
                 ? new NormalMessage(true, null, null)
                 : new NormalMessage(false, MyErrorType.UpdateError, null);
@@ -300,9 +301,11 @@ public class ClusterService {
             if (justForName.size() == 0) {
                 tmpMap.put("isFunctioning", false);
                 tmpMap.put("name", null);
+                tmpMap.put("location", null);
             } else {
                 tmpMap.put("isFunctioning", true);
                 tmpMap.put("name", justForName.get(0).getName());
+                tmpMap.put("location", justForName.get(0).getLocation());
             }
 
             clusterArr.add(tmpMap);
