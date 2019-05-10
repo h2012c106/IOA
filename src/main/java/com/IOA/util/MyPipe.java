@@ -16,7 +16,7 @@ public class MyPipe {
     // 第一层clusterId，第二层sensorId，第三层value+minimum+maximum
     private ConcurrentMap<String, Map<Integer, Map<String, BigDecimal>>> Sensor2Server;
     private ConcurrentMap<String, Timestamp> RefreshTime;
-    public Boolean On = true;
+    public Boolean On = false;
 
     public MyPipe() {
         this.Sensor2Server = new ConcurrentHashMap<>();
