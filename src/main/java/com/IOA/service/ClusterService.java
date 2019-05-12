@@ -184,6 +184,10 @@ public class ClusterService {
                     resultTime = resultTime.before(tmpTime) ? tmpTime : resultTime;
                 }
             }
+            if (!SensorValuesMap.isEmpty()) {
+                Pipe.setSensor2Server(clusterId, SensorValuesMap);
+                Pipe.setRefreshTime(clusterId, resultTime);
+            }
         }
 
         List<SensorModel> sensorModelArr
