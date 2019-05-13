@@ -205,7 +205,9 @@ public class TransmissionService {
 
                         // 塞入缓存及数据库
 //                        this.fulfillPipe(clusterId, sensorMap, deviceMap, currentTime);
-                        this.fulfillPipe(clusterId, sensorMap, currentTime);
+                        if (Pipe.getSensor2Server(clusterId) != null) {
+                            this.fulfillPipe(clusterId, sensorMap, currentTime);
+                        }
                         this.fulfillDB(singleGC.get(0).getGreenhouseId(),
                                 sensorMap, deviceMap, sensorOfClusterArr, currentTime);
 
