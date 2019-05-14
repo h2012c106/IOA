@@ -206,6 +206,7 @@ public class TransmissionService {
                         // 塞入缓存及数据库
 //                        this.fulfillPipe(clusterId, sensorMap, deviceMap, currentTime);
                         if (Pipe.getSensor2Server(clusterId) != null) {
+//                        if (true) {
                             this.fulfillPipe(clusterId, sensorMap, currentTime);
                         }
                         this.fulfillDB(singleGC.get(0).getGreenhouseId(),
@@ -217,7 +218,8 @@ public class TransmissionService {
 
                     //////////// 收到传感器群信息后的逻辑 ////////////
                 }
-            } catch (IOException e) {
+            } catch (
+                    IOException e) {
                 e.printStackTrace();
             } finally {
                 try {
