@@ -16,13 +16,14 @@ public class GreenhouseDAO extends BasicDAO<GreenhouseModel> {
         Session tmpSession = this.getTmpSession();
         Transaction transaction = tmpSession.beginTransaction();
         String qry = "UPDATE GreenhouseModel " +
-                "SET name = (:name), crop = (:crop), status = (:status) " +
+                "SET name = (:name), crop = (:crop), status = (:status), location = (:location) " +
                 "WHERE id = (:id)";
         try {
             int updateRow = tmpSession.createQuery(qry)
                     .setParameter("name", greenhouseModel.getName())
                     .setParameter("crop", greenhouseModel.getCrop())
                     .setParameter("status", greenhouseModel.getStatus())
+                    .setParameter("location", greenhouseModel.getLocation())
                     .setParameter("id", greenhouseModel.getId())
                     .executeUpdate();
             transaction.commit();

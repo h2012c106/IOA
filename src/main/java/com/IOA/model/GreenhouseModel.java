@@ -21,6 +21,9 @@ public class GreenhouseModel {
     @NotNull
     private String crop;
 
+    @NotNull
+    private String location;
+
     private BigDecimal longitude;
 
     private BigDecimal latitude;
@@ -84,6 +87,16 @@ public class GreenhouseModel {
 
     public void setLatitude(BigDecimal latitude) {
         this.latitude = latitude;
+    }
+
+    @Basic
+    @Column(name = "location")
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 
     @Override

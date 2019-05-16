@@ -218,8 +218,7 @@ public class TransmissionService {
 
                     //////////// 收到传感器群信息后的逻辑 ////////////
                 }
-            } catch (
-                    IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             } finally {
                 try {

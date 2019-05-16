@@ -21,6 +21,7 @@ CREATE TABLE `greenhouse`
     `crop`      varchar(16) NOT NULL,
     `longitude` decimal(10, 7),
     `latitude`  decimal(10, 7),
+    `location`  varchar(255) NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8;
